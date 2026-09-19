@@ -177,9 +177,11 @@ export class MenuScene extends Phaser.Scene {
       if (isHardMode) {
         titleText.setColor('#ff3333');
         titleText.setStroke('#660000', 4);
+        bg.setTexture('dojang_bg_hard');
       } else {
         titleText.setColor('#ffe135');
         titleText.setStroke('#b83000', 4);
+        bg.setTexture('dojang_bg');
       }
     };
     updateTitleTheme();

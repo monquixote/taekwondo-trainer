@@ -77,11 +77,9 @@ export class PlayScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     // 1. Scrolling Parallax Dojang Background
-    this.bgTile = this.add.tileSprite(width / 2, height / 2 - 35, width, height - 70, 'dojang_bg');
+    const bgKey = this.isHardMode ? 'dojang_bg_hard' : 'dojang_bg';
+    this.bgTile = this.add.tileSprite(width / 2, height / 2 - 35, width, height - 70, bgKey);
     this.bgTile.setDisplaySize(width, height - 70);
-    if (this.isHardMode) {
-      this.bgTile.setTint(0xff3333);
-    }
 
     // Bottom arcade panel background for ActionDeck
     const deckBg = this.add.graphics();

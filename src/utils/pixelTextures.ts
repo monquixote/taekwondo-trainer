@@ -337,6 +337,57 @@ export function createPixelArtTextures(scene: Phaser.Scene): void {
     }
   });
 
+  createFromGrid('dojang_bg_hard', 240, 135, 2, (ctx) => {
+    // Wall (subtly tinted darker/redder wood)
+    ctx.fillStyle = '#4c2a1a';
+    ctx.fillRect(0, 0, 240, 95);
+
+    // Shoji Screen panels (intense red windows)
+    for (let x = 12; x < 230; x += 38) {
+      ctx.fillStyle = '#b32222';
+      ctx.fillRect(x, 15, 28, 48);
+
+      // Shoji grid lines (dark red/wood)
+      ctx.fillStyle = '#661515';
+      ctx.fillRect(x + 9, 15, 1, 48);
+      ctx.fillRect(x + 18, 15, 1, 48);
+      ctx.fillRect(x, 31, 28, 1);
+      ctx.fillRect(x, 47, 28, 1);
+    }
+
+    // Traditional Wooden Columns
+    for (let x = 0; x < 240; x += 76) {
+      ctx.fillStyle = '#2a110a';
+      ctx.fillRect(x, 0, 10, 95);
+      ctx.fillStyle = '#4a2115';
+      ctx.fillRect(x + 2, 0, 6, 95);
+    }
+
+    // Top Beam
+    ctx.fillStyle = '#1a0a05';
+    ctx.fillRect(0, 0, 240, 12);
+    ctx.fillStyle = '#ff6600';
+    ctx.fillRect(0, 11, 240, 1);
+
+    // Dojang Floor (slightly redder boards)
+    ctx.fillStyle = '#7a3b20';
+    ctx.fillRect(0, 95, 240, 40);
+
+    ctx.fillStyle = '#552212';
+    ctx.fillRect(0, 95, 240, 2);
+    ctx.fillRect(0, 105, 240, 1);
+    ctx.fillRect(0, 117, 240, 2);
+    ctx.fillRect(0, 131, 240, 2);
+
+    // Floor board vertical seams
+    for (let x = 15; x < 240; x += 35) {
+      ctx.fillStyle = '#441a0d';
+      ctx.fillRect(x, 97, 1, 8);
+      ctx.fillRect(x + 18, 106, 1, 11);
+      ctx.fillRect(x - 5, 119, 1, 14);
+    }
+  });
+
   // 10. Heart Icon for Player Health
   createFromGrid('heart', 12, 12, 2, (ctx) => {
     ctx.fillStyle = '#ff2a2a';
