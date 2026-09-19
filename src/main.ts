@@ -31,3 +31,24 @@ const config: Phaser.Types.Core.GameConfig = {
 
 // Initialize game
 export const game = new Phaser.Game(config);
+
+// Bulletproof resize handler for mobile browser URL bars and orientation changes
+function resizeApp() {
+  const container = document.getElementById('game-container');
+  if (container) {
+    container.style.width = window.innerWidth + 'px';
+    container.style.height = window.innerHeight + 'px';
+  }
+  if (game && game.scale) {
+    game.scale.refresh();
+  }
+}
+
+window.addEventListener('resize', resizeApp);
+window.addEventListener('orientationchange', () => {
+  setTimeout(resizeApp, 100);
+  setTimeout(resizeApp, 300); // Safari sometimes takes a moment to update window.innerHeight
+});
+
+// Initial resize
+resizeApp();
