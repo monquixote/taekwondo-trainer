@@ -52,7 +52,7 @@ export class PlayScene extends Phaser.Scene {
 
   init(data: PlaySceneInitData): void {
     this.grade = data.grade;
-    this.isHardMode = data.isHardMode || false;
+    this.isHardMode = data.isHardMode !== undefined ? data.isHardMode : localStorage.getItem('tagb_hard_mode') === 'true';
     this.stats = loadPlayerStats();
     // Start with max health for new session
     this.stats.health = this.stats.maxHealth;
@@ -335,7 +335,7 @@ export class PlayScene extends Phaser.Scene {
       } else if (this.isHardMode) {
         // Hard Mode: Build sentence word by word (English -> Korean)
         this.isBuildingSentence = true;
-        this.targetWords = term.korean.split(' ');
+        this.targetWords = term.korean.replace(/[()]/g, '').trim().split(/\s+/);
         this.currentWordIndex = 0;
         this.builtSentence = [];
         this.presentNextWord();
@@ -406,7 +406,7 @@ export class PlayScene extends Phaser.Scene {
 
     // Collect distractors: grab all words from all terms, filter out the target word
     const allWords = new Set<string>();
-    termPool.forEach(t => t.korean.split(' ').forEach(w => allWords.add(w)));
+    termPool.forEach(t => t.korean.replace(/[()]/g, '').trim().split(/\s+/).forEach(w => allWords.add(w)));
     allWords.delete(targetWord);
     
     const distractorWords = Array.from(allWords);
