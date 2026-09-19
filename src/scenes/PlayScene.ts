@@ -5,6 +5,7 @@ import { Player } from '../objects/Player';
 import { Enemy, EnemyType } from '../objects/Enemy';
 import { ActionDeck, ActionDeckOption } from '../objects/ActionDeck';
 import { soundFx } from '../utils/soundEffects';
+import { KOREAN_DICTIONARY } from '../data/dictionary';
 
 interface PlaySceneInitData {
   grade: KupGrade;
@@ -36,6 +37,7 @@ export class PlayScene extends Phaser.Scene {
   private isTheoryEncounter: boolean = false;
   private currentTerm: TermItem | null = null;
   private currentTheory: TheoryQuestion | null = null;
+  private customCorrectionText: string | null = null;
   private isProcessingResult: boolean = false;
   private isTransitioning: boolean = false;
 
@@ -67,6 +69,7 @@ export class PlayScene extends Phaser.Scene {
     this.currentEnemy = null;
     this.currentTerm = null;
     this.currentTheory = null;
+    this.customCorrectionText = null;
     this.isTheoryEncounter = false;
   }
 
@@ -341,31 +344,67 @@ export class PlayScene extends Phaser.Scene {
         this.presentNextWord();
         return; // Early return, presentNextWord handles UI and action deck
       } else {
-        // Normal: English -> Korean
-        const categoryLabel = `◆ EXECUTE ${term.category.toUpperCase().replace('_', ' ')} ◆`;
-        this.categoryBadgeText.setText(categoryLabel);
-        this.categoryBadgeText.setColor('#ffe135');
-        this.promptText.setText(term.english);
-        this.promptBanner.setVisible(true);
+        // Normal: English -> Korean OR Vocab
+        const termWords = term.korean.replace(/[()]/g, '').trim().split(/\s+/);
+        const vocabWords = termWords.filter(w => KOREAN_DICTIONARY[w]);
 
-        // Collect 3 distractors from terms
-        const distractors = termPool
-          .filter(t => t.id !== term.id)
-          .map(t => t.korean);
-        Phaser.Utils.Array.Shuffle(distractors);
+        // 30% chance for a vocab question (if vocab words are available)
+        const isVocab = vocabWords.length > 0 && Math.random() < 0.3;
 
-        const allChoices = [
-          { label: term.korean, isCorrect: true },
-          ...distractors.slice(0, 3).map(d => ({ label: d, isCorrect: false }))
-        ];
+        if (isVocab) {
+          const targetKorean = Phaser.Utils.Array.GetRandom(vocabWords);
+          const targetEnglish = KOREAN_DICTIONARY[targetKorean];
+          this.customCorrectionText = targetEnglish;
 
-        Phaser.Utils.Array.Shuffle(allChoices);
+          const categoryLabel = `◆ VOCABULARY ◆`;
+          this.categoryBadgeText.setText(categoryLabel);
+          this.categoryBadgeText.setColor('#44ccff');
+          this.promptText.setText(targetKorean);
+          this.promptBanner.setVisible(true);
 
-        options = allChoices.map((c, idx) => ({
-          id: `move_${idx}`,
-          label: c.label,
-          isCorrect: c.isCorrect
-        }));
+          const allEnglishValues = Array.from(new Set(Object.values(KOREAN_DICTIONARY)));
+          const validDistractors = allEnglishValues.filter(val => val !== targetEnglish);
+          Phaser.Utils.Array.Shuffle(validDistractors);
+
+          const allChoices = [
+            { label: targetEnglish, isCorrect: true },
+            ...validDistractors.slice(0, 3).map(d => ({ label: d, isCorrect: false }))
+          ];
+
+          Phaser.Utils.Array.Shuffle(allChoices);
+
+          options = allChoices.map((c, idx) => ({
+            id: `vocab_${idx}`,
+            label: c.label,
+            isCorrect: c.isCorrect
+          }));
+        } else {
+          // Full phrase execution
+          const categoryLabel = `◆ EXECUTE ${term.category.toUpperCase().replace('_', ' ')} ◆`;
+          this.categoryBadgeText.setText(categoryLabel);
+          this.categoryBadgeText.setColor('#ffe135');
+          this.promptText.setText(term.english);
+          this.promptBanner.setVisible(true);
+
+          // Collect 3 distractors from terms
+          const distractors = termPool
+            .filter(t => t.id !== term.id)
+            .map(t => t.korean);
+          Phaser.Utils.Array.Shuffle(distractors);
+
+          const allChoices = [
+            { label: term.korean, isCorrect: true },
+            ...distractors.slice(0, 3).map(d => ({ label: d, isCorrect: false }))
+          ];
+
+          Phaser.Utils.Array.Shuffle(allChoices);
+
+          options = allChoices.map((c, idx) => ({
+            id: `move_${idx}`,
+            label: c.label,
+            isCorrect: c.isCorrect
+          }));
+        }
       }
     }
 
@@ -517,7 +556,10 @@ export class PlayScene extends Phaser.Scene {
       }
 
       // Educational prompt correction
-      const correctText = this.currentTerm ? this.currentTerm.korean : (this.currentTheory?.correctAnswer || '');
+      let correctText = this.currentTerm ? this.currentTerm.korean : (this.currentTheory?.correctAnswer || '');
+      if (this.customCorrectionText) {
+        correctText = this.customCorrectionText;
+      }
       this.categoryBadgeText.setText('◆ CORRECT ANSWER ◆');
       this.categoryBadgeText.setColor('#ff4444');
       this.promptText.setText(correctText);
