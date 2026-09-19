@@ -287,36 +287,67 @@ export class PlayScene extends Phaser.Scene {
       }));
 
     } else {
-      // Technique Question (English -> Korean)
+      // Technique Question
       const termPool = this.grade.terms;
       const term = termPool[Math.floor(Math.random() * termPool.length)];
       this.currentTerm = term;
       this.currentTheory = null;
 
-      const categoryLabel = `◆ EXECUTE ${term.category.toUpperCase().replace('_', ' ')} ◆`;
-      this.categoryBadgeText.setText(categoryLabel);
-      this.categoryBadgeText.setColor('#ffe135');
-      this.promptText.setText(term.english);
-      this.promptBanner.setVisible(true);
+      // 50% chance to be Reverse (Korean -> English) in the latter half of the round
+      const isReverse = this.questionIndex > (this.totalEncounters / 2) && Math.random() > 0.5;
 
-      // Collect 3 distractors from terms
-      const distractors = termPool
-        .filter(t => t.id !== term.id)
-        .map(t => t.korean);
-      Phaser.Utils.Array.Shuffle(distractors);
+      if (isReverse) {
+        // Reverse: Korean -> English
+        const categoryLabel = `◆ TRANSLATE ${term.category.toUpperCase().replace('_', ' ')} ◆`;
+        this.categoryBadgeText.setText(categoryLabel);
+        this.categoryBadgeText.setColor('#ff99ff');
+        this.promptText.setText(term.korean);
+        this.promptBanner.setVisible(true);
 
-      const allChoices = [
-        { label: term.korean, isCorrect: true },
-        ...distractors.slice(0, 3).map(d => ({ label: d, isCorrect: false }))
-      ];
+        const distractors = termPool
+          .filter(t => t.id !== term.id)
+          .map(t => t.english);
+        Phaser.Utils.Array.Shuffle(distractors);
 
-      Phaser.Utils.Array.Shuffle(allChoices);
+        const allChoices = [
+          { label: term.english, isCorrect: true },
+          ...distractors.slice(0, 3).map(d => ({ label: d, isCorrect: false }))
+        ];
 
-      options = allChoices.map((c, idx) => ({
-        id: `move_${idx}`,
-        label: c.label,
-        isCorrect: c.isCorrect
-      }));
+        Phaser.Utils.Array.Shuffle(allChoices);
+
+        options = allChoices.map((c, idx) => ({
+          id: `move_${idx}`,
+          label: c.label,
+          isCorrect: c.isCorrect
+        }));
+      } else {
+        // Normal: English -> Korean
+        const categoryLabel = `◆ EXECUTE ${term.category.toUpperCase().replace('_', ' ')} ◆`;
+        this.categoryBadgeText.setText(categoryLabel);
+        this.categoryBadgeText.setColor('#ffe135');
+        this.promptText.setText(term.english);
+        this.promptBanner.setVisible(true);
+
+        // Collect 3 distractors from terms
+        const distractors = termPool
+          .filter(t => t.id !== term.id)
+          .map(t => t.korean);
+        Phaser.Utils.Array.Shuffle(distractors);
+
+        const allChoices = [
+          { label: term.korean, isCorrect: true },
+          ...distractors.slice(0, 3).map(d => ({ label: d, isCorrect: false }))
+        ];
+
+        Phaser.Utils.Array.Shuffle(allChoices);
+
+        options = allChoices.map((c, idx) => ({
+          id: `move_${idx}`,
+          label: c.label,
+          isCorrect: c.isCorrect
+        }));
+      }
     }
 
     // Bounce prompt banner in
