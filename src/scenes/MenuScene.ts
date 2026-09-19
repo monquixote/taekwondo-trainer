@@ -267,7 +267,11 @@ export class MenuScene extends Phaser.Scene {
       hardModeToggle.setColor(isHardMode ? '#ff4444' : '#aaaaaa');
       updateStartButton(false);
       updateTitleTheme();
-      soundFx.playSelect();
+      if (isHardMode) {
+        soundFx.playHardMode();
+      } else {
+        soundFx.playSelect();
+      }
     });
 
     if (this.input.keyboard) {

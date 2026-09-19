@@ -163,6 +163,54 @@ class SoundEffectsManager {
     });
   }
 
+  public playHardMode(): void {
+    if (!this.enabled) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    // Deep ominous sweep down
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.6);
+
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.6);
+
+    // Deep noise rumble
+    const bufferSize = ctx.sampleRate * 0.5;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(400, ctx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.5);
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.4, ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+
+    noise.start();
+    noise.stop(ctx.currentTime + 0.5);
+  }
+
   private playNoiseBurst(duration: number, volume: number): void {
     const ctx = this.getContext();
     if (!ctx) return;
