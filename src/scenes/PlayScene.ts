@@ -8,6 +8,7 @@ import { soundFx } from '../utils/soundEffects';
 
 interface PlaySceneInitData {
   grade: KupGrade;
+  isHardMode?: boolean;
 }
 
 export class PlayScene extends Phaser.Scene {
@@ -38,13 +39,23 @@ export class PlayScene extends Phaser.Scene {
   private isProcessingResult: boolean = false;
   private isTransitioning: boolean = false;
 
+  // Hard Mode State
+  private isHardMode: boolean = false;
+  private isBuildingSentence: boolean = false;
+  private targetWords: string[] = [];
+  private currentWordIndex: number = 0;
+  private builtSentence: string[] = [];
+
   constructor() {
     super('PlayScene');
   }
 
   init(data: PlaySceneInitData): void {
     this.grade = data.grade;
+    this.isHardMode = data.isHardMode || false;
     this.stats = loadPlayerStats();
+    // Start with max health for new session
+    this.stats.health = this.stats.maxHealth;
     this.questionIndex = 0;
     this.isProcessingResult = false;
     this.isTransitioning = false;
@@ -321,6 +332,14 @@ export class PlayScene extends Phaser.Scene {
           label: c.label,
           isCorrect: c.isCorrect
         }));
+      } else if (this.isHardMode) {
+        // Hard Mode: Build sentence word by word (English -> Korean)
+        this.isBuildingSentence = true;
+        this.targetWords = term.korean.split(' ');
+        this.currentWordIndex = 0;
+        this.builtSentence = [];
+        this.presentNextWord();
+        return; // Early return, presentNextWord handles UI and action deck
       } else {
         // Normal: English -> Korean
         const categoryLabel = `◆ EXECUTE ${term.category.toUpperCase().replace('_', ' ')} ◆`;
@@ -365,6 +384,63 @@ export class PlayScene extends Phaser.Scene {
     });
   }
 
+  private presentNextWord(): void {
+    if (!this.currentTerm) return;
+
+    const termPool = this.grade.terms;
+    const targetWord = this.targetWords[this.currentWordIndex];
+
+    const categoryLabel = `◆ BUILD ${this.currentTerm.category.toUpperCase().replace('_', ' ')} ◆`;
+    this.categoryBadgeText.setText(categoryLabel);
+    this.categoryBadgeText.setColor('#ff4444');
+    
+    // Create the blank sentence representation
+    const sentenceDisplay = this.targetWords.map((_w, i) => {
+      if (i < this.currentWordIndex) return this.builtSentence[i];
+      if (i === this.currentWordIndex) return '[___]';
+      return '___';
+    }).join(' ');
+
+    this.promptText.setText(`${this.currentTerm.english}\n\n${sentenceDisplay}`);
+    this.promptBanner.setVisible(true);
+
+    // Collect distractors: grab all words from all terms, filter out the target word
+    const allWords = new Set<string>();
+    termPool.forEach(t => t.korean.split(' ').forEach(w => allWords.add(w)));
+    allWords.delete(targetWord);
+    
+    const distractorWords = Array.from(allWords);
+    Phaser.Utils.Array.Shuffle(distractorWords);
+
+    const allChoices = [
+      { label: targetWord, isCorrect: true },
+      ...distractorWords.slice(0, 3).map(w => ({ label: w, isCorrect: false }))
+    ];
+
+    Phaser.Utils.Array.Shuffle(allChoices);
+
+    const options = allChoices.map((c, idx) => ({
+      id: `word_${idx}`,
+      label: c.label,
+      isCorrect: c.isCorrect
+    }));
+
+    // Bounce prompt banner if it's the first word
+    if (this.currentWordIndex === 0) {
+      this.promptBanner.setScale(0.9);
+      this.tweens.add({
+        targets: this.promptBanner,
+        scale: 1,
+        duration: 150,
+        ease: 'Back.easeOut'
+      });
+    }
+
+    this.actionDeck.setOptions(options, (selectedOption) => {
+      this.handlePlayerChoice(selectedOption);
+    });
+  }
+
   private handlePlayerChoice(option: ActionDeckOption): void {
     if (this.isProcessingResult) return;
     this.isProcessingResult = true;
@@ -372,6 +448,25 @@ export class PlayScene extends Phaser.Scene {
     const termId = this.currentTerm ? this.currentTerm.id : (this.currentTheory?.id || 'theory');
 
     if (option.isCorrect) {
+      if (this.isBuildingSentence) {
+        this.builtSentence.push(option.label);
+        this.currentWordIndex++;
+        
+        if (this.currentWordIndex < this.targetWords.length) {
+          // Play a small sound for placing a word
+          soundFx.playSelect();
+          this.isProcessingResult = false;
+          this.presentNextWord();
+          return; // Wait for next word
+        } else {
+          // Completed sentence! Proceed with normal success
+          this.isBuildingSentence = false;
+          
+          // Revert prompt text to normal for the success read time
+          this.promptText.setText(this.currentTerm?.english || '');
+        }
+      }
+
       // Success!
       recordAnswerAttempt(this.stats, termId, true);
       this.updateHUD();
@@ -402,6 +497,10 @@ export class PlayScene extends Phaser.Scene {
       this.showScoreFloater(`+${100 + this.stats.currentStreak * 10}`);
 
     } else {
+      if (this.isBuildingSentence) {
+        this.isBuildingSentence = false;
+      }
+      
       // Incorrect!
       recordAnswerAttempt(this.stats, termId, false);
       this.updateHUD();

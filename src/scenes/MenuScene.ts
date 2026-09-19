@@ -167,7 +167,7 @@ export class MenuScene extends Phaser.Scene {
       
       this.time.delayedCall(50, () => {
         const currentGrade = ALL_GRADES[this.selectedGradeIndex];
-        this.scene.start('PlayScene', { grade: currentGrade });
+        this.scene.start('PlayScene', { grade: currentGrade, isHardMode });
       });
     };
 
@@ -228,6 +228,23 @@ export class MenuScene extends Phaser.Scene {
       statsBg.fillRect(-70, -16, 140, 32);
       statsBg.lineStyle(2, 0x7777aa, 1);
       statsBg.strokeRect(-70, -16, 140, 32);
+    });
+
+    // Hard Mode Toggle
+    let isHardMode = localStorage.getItem('tagb_hard_mode') === 'true';
+
+    const hardModeToggle = this.add.text(width / 2, 255, `HARD MODE: ${isHardMode ? 'ON' : 'OFF'}`, {
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: '7px',
+      color: isHardMode ? '#ff4444' : '#aaaaaa'
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    hardModeToggle.on('pointerdown', () => {
+      isHardMode = !isHardMode;
+      localStorage.setItem('tagb_hard_mode', isHardMode.toString());
+      hardModeToggle.setText(`HARD MODE: ${isHardMode ? 'ON' : 'OFF'}`);
+      hardModeToggle.setColor(isHardMode ? '#ff4444' : '#aaaaaa');
+      soundFx.playSelect();
     });
 
     if (this.input.keyboard) {
