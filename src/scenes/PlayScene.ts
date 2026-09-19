@@ -307,8 +307,8 @@ export class PlayScene extends Phaser.Scene {
       this.currentTerm = term;
       this.currentTheory = null;
 
-      // 50% chance to be Reverse (Korean -> English) in the latter half of the round
-      const isReverse = this.questionIndex > (this.totalEncounters / 2) && Math.random() > 0.5;
+      // 40% chance to be Reverse (Korean -> English) - disabled in Hard Mode to focus on word building
+      const isReverse = !this.isHardMode && Math.random() < 0.4;
 
       if (isReverse) {
         // Reverse: Korean -> English
@@ -348,8 +348,8 @@ export class PlayScene extends Phaser.Scene {
         const termWords = term.korean.replace(/[()]/g, '').trim().split(/\s+/);
         const vocabWords = termWords.filter(w => KOREAN_DICTIONARY[w]);
 
-        // 30% chance for a vocab question (if vocab words are available)
-        const isVocab = vocabWords.length > 0 && Math.random() < 0.3;
+        // 50% chance for a vocab question (if vocab words are available)
+        const isVocab = vocabWords.length > 0 && Math.random() < 0.5;
 
         if (isVocab) {
           const targetKorean = Phaser.Utils.Array.GetRandom(vocabWords);
