@@ -312,7 +312,7 @@ export class PlayScene extends Phaser.Scene {
 
       if (isReverse) {
         // Reverse: Korean -> English
-        const categoryLabel = `◆ TRANSLATE ${term.category.toUpperCase().replace('_', ' ')} ◆`;
+        const categoryLabel = `◆ TRANSLATE ◆`;
         this.categoryBadgeText.setText(categoryLabel);
         this.categoryBadgeText.setColor('#ff99ff');
         this.promptText.setText(term.korean);
@@ -380,7 +380,7 @@ export class PlayScene extends Phaser.Scene {
           }));
         } else {
           // Full phrase execution
-          const categoryLabel = `◆ EXECUTE ${term.category.toUpperCase().replace('_', ' ')} ◆`;
+          const categoryLabel = `◆ EXECUTE ◆`;
           this.categoryBadgeText.setText(categoryLabel);
           this.categoryBadgeText.setColor('#ffe135');
           this.promptText.setText(term.english);
@@ -429,7 +429,7 @@ export class PlayScene extends Phaser.Scene {
     const termPool = this.grade.terms;
     const targetWord = this.targetWords[this.currentWordIndex];
 
-    const categoryLabel = `◆ BUILD ${this.currentTerm.category.toUpperCase().replace('_', ' ')} ◆`;
+    const categoryLabel = `◆ BUILD ◆`;
     this.categoryBadgeText.setText(categoryLabel);
     this.categoryBadgeText.setColor('#ff4444');
     
