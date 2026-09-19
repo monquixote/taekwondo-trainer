@@ -186,7 +186,7 @@ export class PlayScene extends Phaser.Scene {
     this.promptBanner.setDepth(50);
 
     const bannerW = 464;
-    const bannerH = 34;
+    const bannerH = 42;
 
     const bannerBg = this.add.graphics();
     bannerBg.fillStyle(0x000000, 0.92);
@@ -195,14 +195,14 @@ export class PlayScene extends Phaser.Scene {
     bannerBg.strokeRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 4);
 
     // Row 1: Dedicated centered category badge
-    this.categoryBadgeText = this.add.text(0, -8, '', {
+    this.categoryBadgeText = this.add.text(0, -11, '', {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '7px',
       color: '#ffe135'
     }).setOrigin(0.5, 0.5);
 
     // Row 2: Dedicated centered question text
-    this.promptText = this.add.text(0, 7, '', {
+    this.promptText = this.add.text(0, 6, '', {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '8px',
       color: '#ffffff',
@@ -445,7 +445,7 @@ export class PlayScene extends Phaser.Scene {
       return '___';
     }).join(' ');
 
-    this.promptText.setText(`${this.currentTerm.english}\n\n${sentenceDisplay}`);
+    this.promptText.setText(`${this.currentTerm.english}\n${sentenceDisplay}`);
     this.promptBanner.setVisible(true);
 
     // Collect distractors: grab all words from all terms, filter out the target word
