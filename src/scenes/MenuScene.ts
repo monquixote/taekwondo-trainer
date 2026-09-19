@@ -44,7 +44,7 @@ export class MenuScene extends Phaser.Scene {
     overlay.fillRect(0, 0, width, height);
 
     // 2. Title Banner (Unobstructed at top center)
-    this.add.text(width / 2, 38, 'TAE KWON-DO TRAINER', {
+    const titleText = this.add.text(width / 2, 38, 'TAE KWON-DO TRAINER', {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '19px',
       color: '#ffe135',
@@ -133,15 +133,13 @@ export class MenuScene extends Phaser.Scene {
     // 6. Action Buttons
     let isTransitioning = false;
 
+    // Hard Mode state (hoisted)
+    let isHardMode = localStorage.getItem('tagb_hard_mode') === 'true';
+
     // Start Button Container
     const startContainer = this.add.container(width / 2 - 80, 222);
     
     const startBg = this.add.graphics();
-    startBg.fillStyle(0x0e7e3e, 1);
-    startBg.fillRect(-70, -16, 140, 32);
-    startBg.lineStyle(2, 0x00ff66, 1);
-    startBg.strokeRect(-70, -16, 140, 32);
-
     const startText = this.add.text(0, 0, 'START GAME', {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '8px',
@@ -150,6 +148,41 @@ export class MenuScene extends Phaser.Scene {
 
     const startZone = this.add.zone(0, 0, 140, 32).setInteractive({ useHandCursor: true });
     startContainer.add([startBg, startText, startZone]);
+
+    const updateStartButton = (hover: boolean = false) => {
+      startBg.clear();
+      if (isHardMode) {
+        if (hover) {
+          startBg.fillStyle(0x991111, 1);
+          startBg.lineStyle(2, 0xff5555, 1);
+        } else {
+          startBg.fillStyle(0x770a0a, 1);
+          startBg.lineStyle(2, 0xff0000, 1);
+        }
+      } else {
+        if (hover) {
+          startBg.fillStyle(0x189e52, 1);
+          startBg.lineStyle(2, 0x55ff99, 1);
+        } else {
+          startBg.fillStyle(0x0e7e3e, 1);
+          startBg.lineStyle(2, 0x00ff66, 1);
+        }
+      }
+      startBg.fillRect(-70, -16, 140, 32);
+      startBg.strokeRect(-70, -16, 140, 32);
+    };
+    updateStartButton(false);
+
+    const updateTitleTheme = () => {
+      if (isHardMode) {
+        titleText.setColor('#ff3333');
+        titleText.setStroke('#660000', 4);
+      } else {
+        titleText.setColor('#ffe135');
+        titleText.setStroke('#b83000', 4);
+      }
+    };
+    updateTitleTheme();
 
     // Blink tween for Start Game
     this.tweens.add({
@@ -172,20 +205,8 @@ export class MenuScene extends Phaser.Scene {
     };
 
     startZone.on('pointerdown', startGame);
-    startZone.on('pointerover', () => {
-      startBg.clear();
-      startBg.fillStyle(0x189e52, 1);
-      startBg.fillRect(-70, -16, 140, 32);
-      startBg.lineStyle(2, 0x55ff99, 1);
-      startBg.strokeRect(-70, -16, 140, 32);
-    });
-    startZone.on('pointerout', () => {
-      startBg.clear();
-      startBg.fillStyle(0x0e7e3e, 1);
-      startBg.fillRect(-70, -16, 140, 32);
-      startBg.lineStyle(2, 0x00ff66, 1);
-      startBg.strokeRect(-70, -16, 140, 32);
-    });
+    startZone.on('pointerover', () => updateStartButton(true));
+    startZone.on('pointerout', () => updateStartButton(false));
 
     // Stats Button Container
     const statsContainer = this.add.container(width / 2 + 80, 222);
@@ -231,8 +252,6 @@ export class MenuScene extends Phaser.Scene {
     });
 
     // Hard Mode Toggle
-    let isHardMode = localStorage.getItem('tagb_hard_mode') === 'true';
-
     const hardModeToggle = this.add.text(width / 2, 255, `HARD MODE: ${isHardMode ? 'ON' : 'OFF'}`, {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '7px',
@@ -244,6 +263,8 @@ export class MenuScene extends Phaser.Scene {
       localStorage.setItem('tagb_hard_mode', isHardMode.toString());
       hardModeToggle.setText(`HARD MODE: ${isHardMode ? 'ON' : 'OFF'}`);
       hardModeToggle.setColor(isHardMode ? '#ff4444' : '#aaaaaa');
+      updateStartButton(false);
+      updateTitleTheme();
       soundFx.playSelect();
     });
 

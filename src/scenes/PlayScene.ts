@@ -79,6 +79,9 @@ export class PlayScene extends Phaser.Scene {
     // 1. Scrolling Parallax Dojang Background
     this.bgTile = this.add.tileSprite(width / 2, height / 2 - 35, width, height - 70, 'dojang_bg');
     this.bgTile.setDisplaySize(width, height - 70);
+    if (this.isHardMode) {
+      this.bgTile.setTint(0xff3333);
+    }
 
     // Bottom arcade panel background for ActionDeck
     const deckBg = this.add.graphics();
@@ -264,10 +267,14 @@ export class PlayScene extends Phaser.Scene {
     }
 
     this.currentEnemy = new Enemy(this, width + 30, groundY, enemyType);
+    if (this.isHardMode) {
+      this.currentEnemy.setTint(0xff6666);
+    }
 
     // Enemy approaches and halts at striking distance
     const stopDistance = this.isTheoryEncounter ? this.player.x + 110 : this.player.x + 80;
-    this.currentEnemy.walkTo(stopDistance, 600, () => {
+    const walkDuration = this.isHardMode ? 400 : 600;
+    this.currentEnemy.walkTo(stopDistance, walkDuration, () => {
       this.presentQuestion();
     });
   }
