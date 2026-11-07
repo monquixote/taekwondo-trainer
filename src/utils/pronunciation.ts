@@ -200,10 +200,7 @@ class SpeechManager {
       const voices = window.speechSynthesis.getVoices();
       if (!voices || voices.length === 0) return;
 
-      const koVoices = voices.filter(v => {
-        const lang = (v.lang || '').replace('_', '-').toLowerCase();
-        return lang.startsWith('ko');
-      });
+      const koVoices = voices.filter(v => /^ko([-_]|$)/i.test(v.lang || ''));
 
       if (koVoices.length === 0) return;
 
@@ -287,9 +284,8 @@ class SpeechManager {
       const uri = v.voiceURI || v.name;
       if (seenURIs.has(uri)) continue;
 
-      const normLang = (v.lang || '').replace('_', '-').toLowerCase();
-      const isKorean = normLang.startsWith('ko');
-      const isEnglish = normLang.startsWith('en');
+      const isKorean = /^ko([-_]|$)/i.test(v.lang || '');
+      const isEnglish = /^en([-_]|$)/i.test(v.lang || '');
 
       if (!isKorean && !isEnglish) continue;
       seenURIs.add(uri);
@@ -440,7 +436,10 @@ class SpeechManager {
       }
 
       utterance.rate = isEnglish ? 0.92 : 0.90;
-      utterance.pitch = this.getUserPitch() ?? 1.0;
+      const { gender: testGender } = targetVoice ? parseVoiceMetadata(targetVoice.name, targetVoice.lang, targetVoice.voiceURI) : { gender: 'unknown' as const };
+      const isTestMale = testGender === 'male' || this.isExplicitMale;
+      const defaultTestPitch = isTestMale ? 1.0 : 0.75;
+      utterance.pitch = this.getUserPitch() ?? defaultTestPitch;
       utterance.volume = 1.0;
 
       window.speechSynthesis.speak(utterance);
@@ -550,18 +549,21 @@ class SpeechManager {
 
       // Delivery settings
       const userPitch = this.getUserPitch();
+      const { gender: activeGender } = activeVoice ? parseVoiceMetadata(activeVoice.name, activeVoice.lang, activeVoice.voiceURI) : { gender: 'unknown' as const };
+      const isVoiceMale = activeGender === 'male' || this.isExplicitMale;
+      const autoPitch = isVoiceMale ? 1.0 : 0.75;
+      const finalPitch = userPitch ?? autoPitch;
+
       if (isEnglish) {
         utterance.rate = 0.92;
-        utterance.pitch = userPitch ?? 1.0;
+        utterance.pitch = finalPitch;
       } else {
         utterance.rate = 0.90;
-        // Pitch: user override if set, otherwise natural (1.0) if an explicit male voice or
-        // user-selected voice, or 0.78 fallback for unconfigured default voices on Android.
-        utterance.pitch = userPitch ?? ((this.isExplicitMale || Boolean(preferredURI && preferredURI !== 'auto')) ? 1.0 : 0.78);
+        utterance.pitch = finalPitch;
       }
       utterance.volume = 1.0;
 
-      console.log(`[TKD Audio] Speaking with: "${activeVoice?.name || 'system default'}", URI: "${activeVoice?.voiceURI || ''}", isEnglish: ${isEnglish}`);
+      console.log(`[TKD Audio] Speaking with: "${activeVoice?.name || 'system default'}", URI: "${activeVoice?.voiceURI || ''}", isEnglish: ${isEnglish}, pitch: ${finalPitch}`);
 
       // Robust fallback if speech synthesis errors out
       utterance.onerror = (e) => {

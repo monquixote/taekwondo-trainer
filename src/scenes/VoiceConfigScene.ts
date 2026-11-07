@@ -122,18 +122,74 @@ export class VoiceConfigScene extends Phaser.Scene {
       this.changePage(1);
     });
 
-    // 7. Pitch button (cycles Auto / 1.0 / 0.8 / 0.65 / 0.5) next to Back button
-    const pitchSteps: (number | null)[] = [null, 1.0, 0.8, 0.65, 0.5];
+    // 7. Bottom Action Bar: [ BACK TO MENU ] and [ PITCH: ... ]
+    const btnY = 250;
+    const btnH = 22;
+
+    // Back Button (Left side)
+    const backBtnX = width / 2 - 85;
+    const backBtnW = 140;
+
+    const backBg = this.add.graphics();
+    backBg.fillStyle(0x282848, 1);
+    backBg.fillRect(backBtnX - backBtnW / 2, btnY - btnH / 2, backBtnW, btnH);
+    backBg.lineStyle(1.5, 0x7777aa, 1);
+    backBg.strokeRect(backBtnX - backBtnW / 2, btnY - btnH / 2, backBtnW, btnH);
+
+    this.add.text(backBtnX, btnY, '◀ BACK TO MENU', {
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: '6.5px',
+      color: '#ffffff'
+    }).setOrigin(0.5);
+
+    const backZone = this.add.zone(backBtnX, btnY, backBtnW, btnH).setInteractive({ useHandCursor: true });
+    backZone.on('pointerdown', () => this.goBack());
+    backZone.on('pointerover', () => {
+      backBg.clear();
+      backBg.fillStyle(0x3d3d6e, 1);
+      backBg.fillRect(backBtnX - backBtnW / 2, btnY - btnH / 2, backBtnW, btnH);
+      backBg.lineStyle(1.5, 0xaaaae0, 1);
+      backBg.strokeRect(backBtnX - backBtnW / 2, btnY - btnH / 2, backBtnW, btnH);
+    });
+    backZone.on('pointerout', () => {
+      backBg.clear();
+      backBg.fillStyle(0x282848, 1);
+      backBg.fillRect(backBtnX - backBtnW / 2, btnY - btnH / 2, backBtnW, btnH);
+      backBg.lineStyle(1.5, 0x7777aa, 1);
+      backBg.strokeRect(backBtnX - backBtnW / 2, btnY - btnH / 2, backBtnW, btnH);
+    });
+
+    // Pitch Button (Right side)
+    const pitchBtnX = width / 2 + 85;
+    const pitchBtnW = 150;
+
+    const pitchBg = this.add.graphics();
+    const updatePitchBg = (hover: boolean = false) => {
+      pitchBg.clear();
+      pitchBg.fillStyle(hover ? 0x2e3860 : 0x1e2444, 1);
+      pitchBg.fillRect(pitchBtnX - pitchBtnW / 2, btnY - btnH / 2, pitchBtnW, btnH);
+      pitchBg.lineStyle(1.5, hover ? 0x88aaff : 0x4466aa, 1);
+      pitchBg.strokeRect(pitchBtnX - pitchBtnW / 2, btnY - btnH / 2, pitchBtnW, btnH);
+    };
+    updatePitchBg(false);
+
+    const pitchSteps: (number | null)[] = [null, 0.75, 0.60, 1.0];
     const pitchLabel = () => {
       const p = speechManager.getUserPitch();
-      return `PITCH: ${p === null ? 'AUTO' : p.toFixed(2)}`;
+      if (p === null) return 'PITCH: AUTO (DEEP)';
+      if (p === 0.75) return 'PITCH: 0.75 (MALE)';
+      if (p === 0.60) return 'PITCH: 0.60 (DEEP)';
+      return 'PITCH: 1.00 (ORIG)';
     };
-    const pitchText = this.add.text(width / 2 + 130, 250, pitchLabel(), {
+
+    const pitchText = this.add.text(pitchBtnX, btnY, pitchLabel(), {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '6.5px',
       color: '#ffe135'
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    pitchText.on('pointerdown', () => {
+    }).setOrigin(0.5);
+
+    const pitchZone = this.add.zone(pitchBtnX, btnY, pitchBtnW, btnH).setInteractive({ useHandCursor: true });
+    pitchZone.on('pointerdown', () => {
       soundFx.playSelect();
       const cur = speechManager.getUserPitch();
       const idx = pitchSteps.findIndex(s => s === cur);
@@ -141,41 +197,16 @@ export class VoiceConfigScene extends Phaser.Scene {
       speechManager.setUserPitch(next);
       pitchText.setText(pitchLabel());
       speechManager.testVoice();
+      this.tweens.add({
+        targets: pitchText,
+        scale: 1.15,
+        duration: 90,
+        yoyo: true,
+        ease: 'Quad.easeOut'
+      });
     });
-
-    // 7. Back Button
-    const backBtnY = 250;
-    const backBtnW = 150;
-    const backBtnH = 22;
-
-    const backBg = this.add.graphics();
-    backBg.fillStyle(0x282848, 1);
-    backBg.fillRect(width / 2 - backBtnW / 2, backBtnY - backBtnH / 2, backBtnW, backBtnH);
-    backBg.lineStyle(1.5, 0x7777aa, 1);
-    backBg.strokeRect(width / 2 - backBtnW / 2, backBtnY - backBtnH / 2, backBtnW, backBtnH);
-
-    this.add.text(width / 2, backBtnY, '◀ BACK TO MENU', {
-      fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
-      color: '#ffffff'
-    }).setOrigin(0.5);
-
-    const backZone = this.add.zone(width / 2, backBtnY, backBtnW, backBtnH).setInteractive({ useHandCursor: true });
-    backZone.on('pointerdown', () => this.goBack());
-    backZone.on('pointerover', () => {
-      backBg.clear();
-      backBg.fillStyle(0x3d3d6e, 1);
-      backBg.fillRect(width / 2 - backBtnW / 2, backBtnY - backBtnH / 2, backBtnW, backBtnH);
-      backBg.lineStyle(1.5, 0xaaaae0, 1);
-      backBg.strokeRect(width / 2 - backBtnW / 2, backBtnY - backBtnH / 2, backBtnW, backBtnH);
-    });
-    backZone.on('pointerout', () => {
-      backBg.clear();
-      backBg.fillStyle(0x282848, 1);
-      backBg.fillRect(width / 2 - backBtnW / 2, backBtnY - backBtnH / 2, backBtnW, backBtnH);
-      backBg.lineStyle(1.5, 0x7777aa, 1);
-      backBg.strokeRect(width / 2 - backBtnW / 2, backBtnY - backBtnH / 2, backBtnW, backBtnH);
-    });
+    pitchZone.on('pointerover', () => updatePitchBg(true));
+    pitchZone.on('pointerout', () => updatePitchBg(false));
 
     // 8. Keyboard Shortcuts
     if (this.input.keyboard) {
