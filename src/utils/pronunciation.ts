@@ -125,12 +125,14 @@ class SpeechManager {
       // 1. Explicit Korean Male Voices:
       // macOS/iOS: Reed, Eddy, Rocko, Grandpa
       // Windows: InJoon (Microsoft InJoon)
-      // Android Google TTS: ko-kr-x-ism, ko-kr-x-koc, Standard-C/D, Wavenet-C/D, Neural2-C/D
+      // Android Google TTS: ko-kr-x-ism, ko-kr-x-koc, ko-kr-x-kod, Voice 2, Voice 3, Voice 5, Standard-C/D, Wavenet-C/D, Neural2-C/D
       // Samsung / generic: names or voiceURIs with 'male', '#male', '남성', '남자'
       const maleKeywords = [
         'reed', 'eddy', 'rocko', 'grandpa',
         'injoon', 'minsu', 'min-su',
-        'ism', 'koc',
+        'ism', 'koc', 'kod',
+        'voice ii', 'voice 2', 'voice iii', 'voice 3', 'voice v', 'voice 5',
+        'voice-2', 'voice-3', 'voice-5',
         'standard-c', 'standard-d', 'wavenet-c', 'wavenet-d', 'neural2-c', 'neural2-d',
         'male', '#male', '남성', '남자'
       ];
@@ -153,6 +155,8 @@ class SpeechManager {
         'yuna', 'flo', 'sandy', 'shelley', 'grandma',
         'heami', 'sunhi',
         'kof', 'kob', 'koa',
+        'voice i', 'voice 1', 'voice iv', 'voice 4',
+        'voice-1', 'voice-4',
         'standard-a', 'standard-b', 'wavenet-a', 'wavenet-b', 'neural2-a', 'neural2-b',
         'female', '#female', 'woman', '여성', '여자'
       ];
@@ -226,8 +230,9 @@ class SpeechManager {
       }
       window.speechSynthesis.cancel(); // Stop overlapping speech
 
-      // Ensure voices are initialized
-      if (!this.koreanMaleVoice) {
+      // Re-scan voices on user interaction if no explicit male voice was locked in yet
+      // (crucial on Android Chrome where voices load asynchronously after page load)
+      if (!this.koreanMaleVoice || !this.isExplicitMale) {
         this.initVoices();
       }
 
@@ -250,6 +255,8 @@ class SpeechManager {
       utterance.rate = 0.90;
       utterance.pitch = targetPitch;
       utterance.volume = 1.0;
+
+      console.log(`[TKD Audio] Speaking with: "${this.koreanMaleVoice?.name || 'system default'}", URI: "${this.koreanMaleVoice?.voiceURI || ''}", isExplicitMale: ${this.isExplicitMale}, pitch: ${targetPitch}`);
 
       // Robust fallback if a specific voice fails to synthesize
       utterance.onerror = (e) => {
