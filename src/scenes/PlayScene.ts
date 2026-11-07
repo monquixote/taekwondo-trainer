@@ -54,6 +54,9 @@ export class PlayScene extends Phaser.Scene {
 
   init(data: PlaySceneInitData): void {
     this.grade = data.grade;
+    if (this.grade?.id) {
+      localStorage.setItem('tagb_selected_grade', this.grade.id);
+    }
     this.isHardMode = data.isHardMode !== undefined ? data.isHardMode : localStorage.getItem('tagb_hard_mode') === 'true';
     this.stats = loadPlayerStats();
     // Start with max health for new session

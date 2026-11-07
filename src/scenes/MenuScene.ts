@@ -5,7 +5,7 @@ import { loadPlayerStats } from '../data/progress';
 import { soundFx } from '../utils/soundEffects';
 
 export class MenuScene extends Phaser.Scene {
-  private selectedGradeIndex: number = 1; // Default to 8th Kup (index 1 in ALL_GRADES [kup9, kup8])
+  private selectedGradeIndex: number = 2; // Default to 7th Kup (index 2 in ALL_GRADES [kup9, kup8, kup7])
   private gradeText!: Phaser.GameObjects.Text;
   private beltIconGraphics!: Phaser.GameObjects.Graphics;
   private playerPreview!: Phaser.GameObjects.Image;
@@ -19,9 +19,21 @@ export class MenuScene extends Phaser.Scene {
       const idx = ALL_GRADES.findIndex(g => g.id === data.gradeId);
       if (idx !== -1) {
         this.selectedGradeIndex = idx;
+        localStorage.setItem('tagb_selected_grade', data.gradeId);
         return;
       }
     }
+
+    // Check if user previously selected a grade in local storage
+    const savedGradeId = localStorage.getItem('tagb_selected_grade');
+    if (savedGradeId) {
+      const savedIdx = ALL_GRADES.findIndex(g => g.id === savedGradeId);
+      if (savedIdx !== -1) {
+        this.selectedGradeIndex = savedIdx;
+        return;
+      }
+    }
+
     const defaultGrade = getDefaultGrade();
     const foundIdx = ALL_GRADES.findIndex(g => g.id === defaultGrade.id);
     if (foundIdx !== -1) {
@@ -202,6 +214,7 @@ export class MenuScene extends Phaser.Scene {
       
       this.time.delayedCall(50, () => {
         const currentGrade = ALL_GRADES[this.selectedGradeIndex];
+        localStorage.setItem('tagb_selected_grade', currentGrade.id);
         this.scene.start('PlayScene', { grade: currentGrade, isHardMode });
       });
     };
@@ -298,6 +311,10 @@ export class MenuScene extends Phaser.Scene {
   private changeGrade(direction: number): void {
     soundFx.playSelect();
     this.selectedGradeIndex = (this.selectedGradeIndex + direction + ALL_GRADES.length) % ALL_GRADES.length;
+    const grade = ALL_GRADES[this.selectedGradeIndex];
+    if (grade) {
+      localStorage.setItem('tagb_selected_grade', grade.id);
+    }
     this.updateGradeDisplay();
   }
 

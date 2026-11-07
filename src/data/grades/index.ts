@@ -13,9 +13,9 @@ export const ALL_GRADES: KupGrade[] = [
 
 export function getGradeById(id: string): KupGrade {
   const found = ALL_GRADES.find(g => g.id === id);
-  return found || kup8; // default to 8th Kup
+  return found || kup7; // default to 7th Kup
 }
 
 export function getDefaultGrade(): KupGrade {
-  return kup8; // The user's son's current study focus
+  return kup7; // Default starting point (7th Kup)
 }
