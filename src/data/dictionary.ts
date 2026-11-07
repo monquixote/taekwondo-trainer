@@ -30,5 +30,17 @@ export const KOREAN_DICTIONARY: Record<string, string> = {
   'Anuro': 'Inward',
   'Bakuro': 'Outward',
   'Dwit': 'Backward',
-  'Cha-Jirugi': 'Piercing Kick'
+  'Cha-Jirugi': 'Piercing Kick',
+  'Dwitchhook': 'Heel',
+  'Sonbadak': 'Palm',
+  'Balkut': 'Toes',
+  'Nachuo': 'Low',
+  'Dwitbal': 'Rear foot',
+  'Opun': 'Flat',
+  'Dollymio': 'Circular',
+  'Ollyo': 'Upward',
+  'Bandae': 'Reverse',
+  'Dollyo': 'Turning',
+  'Sonkal': 'Knifehand',
+  'Jappyosul': 'Release from grab'
 };

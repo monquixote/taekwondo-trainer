@@ -28,6 +28,11 @@ export interface TheoryQuestion {
   explanation?: string;
 }
 
+export interface SparringStep {
+  step: number;
+  action: string;
+}
+
 export interface KupGrade {
   id: string;
   gradeNumber: number; // e.g. 8 for 8th Kup
@@ -42,6 +47,8 @@ export interface KupGrade {
   beltMeaning: string;
   terms: TermItem[];
   theory: TheoryQuestion[];
+  sparringSequence?: SparringStep[];
+  notes?: string;
 }
 
 export interface PlayerStats {
