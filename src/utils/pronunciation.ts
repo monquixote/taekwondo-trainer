@@ -97,7 +97,7 @@ export const HANGUL_MAP: Record<string, PronunciationEntry> = {
 };
 
 class SpeechManager {
-  private instructorVoice: SpeechSynthesisVoice | null = null;
+  private koreanMaleVoice: SpeechSynthesisVoice | null = null;
 
   constructor() {
     this.initVoices();
@@ -106,104 +106,87 @@ class SpeechManager {
   private initVoices(): void {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
 
-    const findInstructorVoice = (): SpeechSynthesisVoice | null => {
+    const findVoices = () => {
       const voices = window.speechSynthesis.getVoices();
-      if (!voices || voices.length === 0) return null;
+      if (!voices || voices.length === 0) return;
 
-      const enVoices = voices.filter(v => {
+      const koVoices = voices.filter(v => {
         const lang = (v.lang || '').replace('_', '-').toLowerCase();
-        return lang.startsWith('en');
+        return lang.startsWith('ko');
       });
 
-      const ukVoices = enVoices.filter(v => {
-        const lang = (v.lang || '').replace('_', '-').toLowerCase();
-        return lang.startsWith('en-gb') || lang === 'en-uk';
-      });
+      // Prioritize local voices over remote to avoid silent hangs in WebKit/Blink
+      const localKoVoices = koVoices.filter(v => v.localService);
+      const searchPool = localKoVoices.length > 0 ? localKoVoices : koVoices;
 
-      // 1. British English Male Voices (ideal for UK TAGB martial arts instructor)
-      // Daniel is the standard macOS UK male voice; Oliver, George, Arthur, Ryan, Malcolm, Brian are also UK male voices.
-      const ukMaleKeywords = ['daniel', 'oliver', 'george', 'arthur', 'ryan', 'malcolm', 'brian', 'uk english male'];
-      for (const kw of ukMaleKeywords) {
-        const found = ukVoices.find(v => v.name.toLowerCase().includes(kw));
-        if (found) return found;
+      // 1. Explicit Korean Male Voices:
+      // macOS/iOS: Reed, Eddy, Rocko, Grandpa
+      // Windows: InJoon (Microsoft InJoon)
+      // Generic: any voice containing 'male' or 'minsu'
+      const maleKeywords = ['reed', 'eddy', 'rocko', 'injoon', 'minsu', 'min-su', 'grandpa', 'male'];
+      let male = searchPool.find(v => maleKeywords.some(kw => v.name.toLowerCase().includes(kw)));
+
+      if (!male && localKoVoices.length > 0) {
+        male = koVoices.find(v => maleKeywords.some(kw => v.name.toLowerCase().includes(kw)));
       }
 
-      // Check if any UK voice explicitly has "male" in its name
-      const ukMale = ukVoices.find(v => v.name.toLowerCase().includes('male'));
-      if (ukMale) return ukMale;
-
-      // 2. Other English Male Voices (e.g., Alex on macOS, David on Windows, Guy, James, Fred)
-      const maleKeywords = ['alex', 'david', 'guy', 'james', 'fred'];
-      for (const kw of maleKeywords) {
-        const found = enVoices.find(v => v.name.toLowerCase().includes(kw));
-        if (found) return found;
+      // 2. Korean voices not known to be female
+      if (!male) {
+        const femaleKeywords = ['yuna', 'flo', 'sandy', 'shelley', 'grandma', 'heami', 'sunhi', 'female', 'woman'];
+        male = searchPool.find(v => !femaleKeywords.some(kw => v.name.toLowerCase().includes(kw)));
       }
-      const genericMale = enVoices.find(v => v.name.toLowerCase().includes('male'));
-      if (genericMale) return genericMale;
 
-      // 3. Fallback to any UK voice
-      if (ukVoices.length > 0) return ukVoices[0];
+      // 3. Fallback to any local Korean voice, or first Korean voice
+      if (!male) {
+        male = searchPool[0] || koVoices[0] || null;
+      }
 
-      // 4. Fallback to any English voice
-      return enVoices[0] || voices[0] || null;
+      this.koreanMaleVoice = male;
     };
 
-    const load = () => {
-      this.instructorVoice = findInstructorVoice();
-    };
-
-    load();
+    findVoices();
     if (typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
-      window.speechSynthesis.onvoiceschanged = load;
+      window.speechSynthesis.onvoiceschanged = findVoices;
     }
   }
 
   /**
-   * Translates a romanized Korean term into its clear phonetic English pronunciation
-   * suitable for an English martial arts instructor calling commands.
+   * Translates a romanized Korean term into native Hangul script
+   * for authentic Korean pronunciation.
    */
-  public getPronunciation(term: string): { text: string } {
+  public getPronunciation(term: string): { text: string; isHangul: boolean } {
     const clean = term.replace(/[()]/g, '').trim();
-
-    let phoneticStr = '';
 
     // 1. Exact match in full phrases
     if (HANGUL_MAP[clean]) {
-      phoneticStr = HANGUL_MAP[clean].phonetic;
-    } else {
-      // 2. Case-insensitive exact match
-      const foundKey = Object.keys(HANGUL_MAP).find(k => k.toLowerCase() === clean.toLowerCase());
-      if (foundKey) {
-        phoneticStr = HANGUL_MAP[foundKey].phonetic;
-      } else {
-        // 3. Deconstruct word by word
-        const words = clean.split(/\s+/);
-        const phoneticWords: string[] = [];
+      return { text: HANGUL_MAP[clean].hangul, isHangul: true };
+    }
 
-        for (const w of words) {
-          const entry = HANGUL_MAP[w] || Object.entries(HANGUL_MAP).find(([k]) => k.toLowerCase() === w.toLowerCase())?.[1];
-          if (entry) {
-            phoneticWords.push(entry.phonetic);
-          } else {
-            phoneticWords.push(w);
-          }
-        }
-        phoneticStr = phoneticWords.join(' ');
+    // 2. Case-insensitive exact match
+    const foundKey = Object.keys(HANGUL_MAP).find(k => k.toLowerCase() === clean.toLowerCase());
+    if (foundKey) {
+      return { text: HANGUL_MAP[foundKey].hangul, isHangul: true };
+    }
+
+    // 3. Deconstruct word by word
+    const words = clean.split(/\s+/);
+    const hangulWords: string[] = [];
+
+    for (const w of words) {
+      const entry = HANGUL_MAP[w] || Object.entries(HANGUL_MAP).find(([k]) => k.toLowerCase() === w.toLowerCase())?.[1];
+      if (entry) {
+        hangulWords.push(entry.hangul);
+      } else {
+        hangulWords.push(w);
       }
     }
 
-    // Clean text: replace hyphens with spaces for natural syllable cadence,
-    // and strip any punctuation marks so the voice never verbalizes punctuation aloud.
-    const text = phoneticStr
-      .replace(/[-_!?,.:;()]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    return { text };
+    const text = hangulWords.join(' ').replace(/[-_!?,.:;()]/g, ' ').replace(/\s+/g, ' ').trim();
+    return { text, isHangul: true };
   }
 
   /**
-   * Speaks the terminology using the male English instructor voice.
+   * Speaks the terminology using a Korean male instructor voice.
    * Cancels any currently playing utterance and honors the global sound toggle.
    */
   public speakKorean(term: string): void {
@@ -217,24 +200,24 @@ class SpeechManager {
       window.speechSynthesis.cancel(); // Stop overlapping speech
 
       // Ensure voices are initialized
-      if (!this.instructorVoice) {
+      if (!this.koreanMaleVoice) {
         this.initVoices();
       }
 
-      const { text } = this.getPronunciation(term);
+      const { text, isHangul } = this.getPronunciation(term);
       if (!text) return;
 
       const utterance = new SpeechSynthesisUtterance(text);
-      if (this.instructorVoice) {
-        utterance.voice = this.instructorVoice;
-        utterance.lang = this.instructorVoice.lang;
+      if (this.koreanMaleVoice) {
+        utterance.voice = this.koreanMaleVoice;
+        utterance.lang = this.koreanMaleVoice.lang || 'ko-KR';
       } else {
-        utterance.lang = 'en-GB';
+        utterance.lang = 'ko-KR';
       }
 
-      // Measured, authoritative martial arts cadence with resonant male pitch
-      utterance.rate = 0.92;
-      utterance.pitch = 0.95;
+      // Measured, authentic Korean martial arts instructor delivery with masculine resonance
+      utterance.rate = 0.90;
+      utterance.pitch = 0.90;
       utterance.volume = 1.0;
 
       // Robust fallback if a specific voice fails to synthesize
@@ -243,9 +226,9 @@ class SpeechManager {
         if (utterance.voice) {
           try {
             const fallbackUtterance = new SpeechSynthesisUtterance(text);
-            fallbackUtterance.lang = 'en-GB';
-            fallbackUtterance.rate = 0.92;
-            fallbackUtterance.pitch = 0.95;
+            fallbackUtterance.lang = isHangul ? 'ko-KR' : 'en-GB';
+            fallbackUtterance.rate = 0.90;
+            fallbackUtterance.pitch = 0.90;
             window.speechSynthesis.speak(fallbackUtterance);
           } catch (err) {
             console.warn('Fallback speech error:', err);
