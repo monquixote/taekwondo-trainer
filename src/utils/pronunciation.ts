@@ -98,6 +98,7 @@ export const HANGUL_MAP: Record<string, PronunciationEntry> = {
 
 class SpeechManager {
   private koreanMaleVoice: SpeechSynthesisVoice | null = null;
+  private isExplicitMale: boolean = false;
 
   constructor() {
     this.initVoices();
@@ -115,6 +116,8 @@ class SpeechManager {
         return lang.startsWith('ko');
       });
 
+      if (koVoices.length === 0) return;
+
       // Prioritize local voices over remote to avoid silent hangs in WebKit/Blink
       const localKoVoices = koVoices.filter(v => v.localService);
       const searchPool = localKoVoices.length > 0 ? localKoVoices : koVoices;
@@ -122,26 +125,50 @@ class SpeechManager {
       // 1. Explicit Korean Male Voices:
       // macOS/iOS: Reed, Eddy, Rocko, Grandpa
       // Windows: InJoon (Microsoft InJoon)
-      // Generic: any voice containing 'male' or 'minsu'
-      const maleKeywords = ['reed', 'eddy', 'rocko', 'injoon', 'minsu', 'min-su', 'grandpa', 'male'];
-      let male = searchPool.find(v => maleKeywords.some(kw => v.name.toLowerCase().includes(kw)));
+      // Android Google TTS: ko-kr-x-ism, ko-kr-x-koc, Standard-C/D, Wavenet-C/D, Neural2-C/D
+      // Samsung / generic: names or voiceURIs with 'male', '#male', '남성', '남자'
+      const maleKeywords = [
+        'reed', 'eddy', 'rocko', 'grandpa',
+        'injoon', 'minsu', 'min-su',
+        'ism', 'koc',
+        'standard-c', 'standard-d', 'wavenet-c', 'wavenet-d', 'neural2-c', 'neural2-d',
+        'male', '#male', '남성', '남자'
+      ];
 
+      const getDesc = (v: SpeechSynthesisVoice) => `${v.name} ${v.voiceURI || ''}`.toLowerCase();
+
+      let male = searchPool.find(v => maleKeywords.some(kw => getDesc(v).includes(kw)));
       if (!male && localKoVoices.length > 0) {
-        male = koVoices.find(v => maleKeywords.some(kw => v.name.toLowerCase().includes(kw)));
+        male = koVoices.find(v => maleKeywords.some(kw => getDesc(v).includes(kw)));
+      }
+
+      if (male) {
+        this.koreanMaleVoice = male;
+        this.isExplicitMale = true;
+        return;
       }
 
       // 2. Korean voices not known to be female
-      if (!male) {
-        const femaleKeywords = ['yuna', 'flo', 'sandy', 'shelley', 'grandma', 'heami', 'sunhi', 'female', 'woman'];
-        male = searchPool.find(v => !femaleKeywords.some(kw => v.name.toLowerCase().includes(kw)));
+      const femaleKeywords = [
+        'yuna', 'flo', 'sandy', 'shelley', 'grandma',
+        'heami', 'sunhi',
+        'kof', 'kob', 'koa',
+        'standard-a', 'standard-b', 'wavenet-a', 'wavenet-b', 'neural2-a', 'neural2-b',
+        'female', '#female', 'woman', '여성', '여자'
+      ];
+
+      male = searchPool.find(v => !femaleKeywords.some(kw => getDesc(v).includes(kw)));
+      if (!male && localKoVoices.length > 0) {
+        male = koVoices.find(v => !femaleKeywords.some(kw => getDesc(v).includes(kw)));
       }
 
-      // 3. Fallback to any local Korean voice, or first Korean voice
+      // 3. Fallback to any available Korean voice (e.g. default Android Google TTS voice)
       if (!male) {
         male = searchPool[0] || koVoices[0] || null;
       }
 
       this.koreanMaleVoice = male;
+      this.isExplicitMale = false;
     };
 
     findVoices();
@@ -215,9 +242,13 @@ class SpeechManager {
         utterance.lang = 'ko-KR';
       }
 
-      // Measured, authentic Korean martial arts instructor delivery at natural pitch
+      // Measured, authentic Korean martial arts instructor delivery.
+      // If an explicit male voice is loaded, use natural pitch (1.0).
+      // If only a female/unspecified default voice is installed (common on Android),
+      // lower pitch to 0.78 to shift the voice into a solid masculine instructor baritone.
+      const targetPitch = this.isExplicitMale ? 1.0 : 0.78;
       utterance.rate = 0.90;
-      utterance.pitch = 1.0;
+      utterance.pitch = targetPitch;
       utterance.volume = 1.0;
 
       // Robust fallback if a specific voice fails to synthesize
@@ -228,7 +259,7 @@ class SpeechManager {
             const fallbackUtterance = new SpeechSynthesisUtterance(text);
             fallbackUtterance.lang = isHangul ? 'ko-KR' : 'en-GB';
             fallbackUtterance.rate = 0.90;
-            fallbackUtterance.pitch = 1.0;
+            fallbackUtterance.pitch = targetPitch;
             window.speechSynthesis.speak(fallbackUtterance);
           } catch (err) {
             console.warn('Fallback speech error:', err);
