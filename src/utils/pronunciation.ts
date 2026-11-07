@@ -110,20 +110,20 @@ class SpeechManager {
     const load = () => {
       const voices = window.speechSynthesis.getVoices();
       if (voices.length > 0) {
-        // Collect Korean voices and prioritize Enhanced / Premium / Natural / Neural voices
+        // Prioritize natural local Korean voices (Yuna is the beloved natural female voice on macOS/iOS)
         const koVoices = voices.filter(v => v.lang === 'ko-KR' || v.lang === 'ko_KR' || v.lang.startsWith('ko'));
         this.koreanVoice =
-          koVoices.find(v => v.name.includes('Premium') || v.name.includes('Enhanced') || v.name.includes('Natural')) ||
-          koVoices.find(v => v.name.includes('Google') || v.name.includes('Siri') || v.name.includes('Yuna')) ||
-          koVoices.find(v => !v.localService) ||
+          koVoices.find(v => v.name.toLowerCase().includes('yuna')) ||
+          koVoices.find(v => v.localService && (v.name.includes('Premium') || v.name.includes('Enhanced') || v.name.includes('Natural'))) ||
+          koVoices.find(v => v.localService) ||
           koVoices[0] ||
           null;
 
-        // Best natural English voice for phonetic fallback
+        // Natural female English voice for fallback
         const enVoices = voices.filter(v => v.lang.startsWith('en'));
         this.englishVoice =
-          enVoices.find(v => v.name.includes('Premium') || v.name.includes('Enhanced') || v.name.includes('Natural')) ||
-          enVoices.find(v => v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Google')) ||
+          enVoices.find(v => v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Victoria')) ||
+          enVoices.find(v => v.localService) ||
           enVoices[0] ||
           null;
       }
@@ -195,6 +195,9 @@ class SpeechManager {
     if (!soundFx.isEnabled()) return;
 
     try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
       window.speechSynthesis.cancel(); // Stop overlapping speech
 
       // Ensure voices are initialized if they loaded after constructor
@@ -204,27 +207,44 @@ class SpeechManager {
 
       const { text, isHangul } = this.getPronunciation(term);
       
-      // Strip any punctuation so TTS voices never vocalize "exclamation point" or "period"
+      // Clean text only - no punctuation so it never reads punctuation aloud
       const cleanText = text.replace(/[!?,.:;()\-]/g, ' ').replace(/\s+/g, ' ').trim();
+      if (!cleanText) return;
+
       const utterance = new SpeechSynthesisUtterance(cleanText);
 
-      if (isHangul && this.koreanVoice) {
-        utterance.voice = this.koreanVoice;
+      if (isHangul) {
         utterance.lang = 'ko-KR';
-        // A crisp rate of 0.98 prevents robotic phoneme-stretching (which happened at 0.88),
-        // while a pitch of 1.08 adds brightness, energy, and inflection.
-        utterance.rate = 0.98;
-        utterance.pitch = 1.08;
+        if (this.koreanVoice) {
+          utterance.voice = this.koreanVoice;
+        }
+        utterance.rate = 0.95;
+        utterance.pitch = 1.0;
         utterance.volume = 1.0;
       } else {
+        utterance.lang = 'en-US';
         if (this.englishVoice) {
           utterance.voice = this.englishVoice;
         }
-        utterance.lang = 'en-US';
         utterance.rate = 0.95;
-        utterance.pitch = 1.05;
+        utterance.pitch = 1.0;
         utterance.volume = 1.0;
       }
+
+      // Robust fallback if a specific voice fails to synthesize
+      utterance.onerror = (e) => {
+        console.warn('Speech synthesis utterance error:', e);
+        if (utterance.voice) {
+          try {
+            const fallbackUtterance = new SpeechSynthesisUtterance(cleanText);
+            fallbackUtterance.lang = isHangul ? 'ko-KR' : 'en-US';
+            fallbackUtterance.rate = 0.95;
+            window.speechSynthesis.speak(fallbackUtterance);
+          } catch (err) {
+            console.warn('Fallback speech error:', err);
+          }
+        }
+      };
 
       window.speechSynthesis.speak(utterance);
     } catch (e) {
