@@ -3,9 +3,8 @@ import type { KupGrade } from '../types.ts';
 export const kup8: KupGrade = {
   id: '8th-kup',
   gradeNumber: 8,
-  title: '8th Kup - Yellow Belt (Green Stripe Prep)',
+  title: '8th Kup - Yellow Belt',
   beltColor: '#ffe135',
-  stripeColor: '#10b981',
   pattern: {
     name: 'Dan-Gun',
     movements: 21,
