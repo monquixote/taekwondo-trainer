@@ -173,13 +173,14 @@ export class VoiceConfigScene extends Phaser.Scene {
     };
     updatePitchBg(false);
 
-    const pitchSteps: (number | null)[] = [null, 0.75, 0.60, 1.0];
+    const pitchSteps: (number | null)[] = [null, 0.85, 0.75, 1.15];
     const pitchLabel = () => {
       const p = speechManager.getUserPitch();
-      if (p === null) return 'PITCH: AUTO (DEEP)';
-      if (p === 0.75) return 'PITCH: 0.75 (MALE)';
-      if (p === 0.60) return 'PITCH: 0.60 (DEEP)';
-      return 'PITCH: 1.00 (ORIG)';
+      if (p === null) return 'PITCH: NATURAL (1.0)';
+      if (p === 0.85) return 'PITCH: LOW (0.85)';
+      if (p === 0.75) return 'PITCH: DEEP (0.75)';
+      if (p === 1.15) return 'PITCH: HIGH (1.15)';
+      return `PITCH: ${p.toFixed(2)}`;
     };
 
     const pitchText = this.add.text(pitchBtnX, btnY, pitchLabel(), {

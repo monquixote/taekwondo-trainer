@@ -436,10 +436,7 @@ class SpeechManager {
       }
 
       utterance.rate = isEnglish ? 0.92 : 0.90;
-      const { gender: testGender } = targetVoice ? parseVoiceMetadata(targetVoice.name, targetVoice.lang, targetVoice.voiceURI) : { gender: 'unknown' as const };
-      const isTestMale = testGender === 'male' || this.isExplicitMale;
-      const defaultTestPitch = isTestMale ? 1.0 : 0.75;
-      utterance.pitch = this.getUserPitch() ?? defaultTestPitch;
+      utterance.pitch = this.getUserPitch() ?? 1.0;
       utterance.volume = 1.0;
 
       window.speechSynthesis.speak(utterance);
@@ -549,10 +546,7 @@ class SpeechManager {
 
       // Delivery settings
       const userPitch = this.getUserPitch();
-      const { gender: activeGender } = activeVoice ? parseVoiceMetadata(activeVoice.name, activeVoice.lang, activeVoice.voiceURI) : { gender: 'unknown' as const };
-      const isVoiceMale = activeGender === 'male' || this.isExplicitMale;
-      const autoPitch = isVoiceMale ? 1.0 : 0.75;
-      const finalPitch = userPitch ?? autoPitch;
+      const finalPitch = userPitch ?? 1.0;
 
       if (isEnglish) {
         utterance.rate = 0.92;
