@@ -8,10 +8,19 @@ import { soundFx } from '../utils/soundEffects';
 import { KOREAN_DICTIONARY } from '../data/dictionary';
 import { buildEncounterDeck, EncounterCard } from '../utils/deckBuilder';
 
+export interface RoundMistake {
+  type: 'technique' | 'theory';
+  term?: TermItem;
+  theory?: TheoryQuestion;
+  prompt: string;
+  correctAnswer: string;
+}
+
 interface PlaySceneInitData {
   grade: KupGrade;
   isHardMode?: boolean;
   isCumulativeExam?: boolean;
+  retryMistakes?: RoundMistake[];
 }
 
 export class PlayScene extends Phaser.Scene {
@@ -48,6 +57,8 @@ export class PlayScene extends Phaser.Scene {
   private encounterDeck: EncounterCard[] = [];
   private allCandidateTerms: TermItem[] = [];
   private currentEncounterCard: EncounterCard | null = null;
+  private roundMistakes: RoundMistake[] = [];
+  private isReviewMode: boolean = false;
 
   // Hard Mode State
   private isHardMode: boolean = false;
@@ -75,8 +86,6 @@ export class PlayScene extends Phaser.Scene {
     this.isTransitioning = false;
 
     // Reset ALL stale references from previous game session.
-    // Phaser reuses the same class instance on scene.start(),
-    // so property initializers (e.g. hearts = []) do NOT re-run.
     this.hearts = [];
     this.currentEnemy = null;
     this.currentTerm = null;
@@ -84,16 +93,39 @@ export class PlayScene extends Phaser.Scene {
     this.customCorrectionText = null;
     this.isTheoryEncounter = false;
     this.currentEncounterCard = null;
+    this.roundMistakes = [];
+    this.isReviewMode = Boolean(data.retryMistakes && data.retryMistakes.length > 0);
 
-    // Build smart spaced-repetition deck (weighted against student weaknesses, no duplicate questions)
-    const { deck, allCandidateTerms } = buildEncounterDeck({
-      grade: this.grade,
-      isCumulativeExam: this.isCumulativeExam,
-      totalEncounters: this.totalEncounters,
-      stats: this.stats
-    });
-    this.encounterDeck = deck;
-    this.allCandidateTerms = allCandidateTerms;
+    if (this.isReviewMode && data.retryMistakes) {
+      // Focused Review Mode: drill only the missed items from the previous round
+      this.totalEncounters = data.retryMistakes.length;
+      this.encounterDeck = data.retryMistakes.map(m => ({
+        type: m.type,
+        term: m.term,
+        theory: m.theory,
+        gradeTitle: this.grade.title,
+        isCurrentGrade: true
+      }));
+
+      const { allCandidateTerms } = buildEncounterDeck({
+        grade: this.grade,
+        isCumulativeExam: this.isCumulativeExam,
+        totalEncounters: 10,
+        stats: this.stats
+      });
+      this.allCandidateTerms = allCandidateTerms;
+    } else {
+      // Standard Round: Smart spaced-repetition deck (weighted against weaknesses, zero duplicates)
+      this.totalEncounters = 10;
+      const { deck, allCandidateTerms } = buildEncounterDeck({
+        grade: this.grade,
+        isCumulativeExam: this.isCumulativeExam,
+        totalEncounters: this.totalEncounters,
+        stats: this.stats
+      });
+      this.encounterDeck = deck;
+      this.allCandidateTerms = allCandidateTerms;
+    }
   }
 
   create(): void {
@@ -249,7 +281,12 @@ export class PlayScene extends Phaser.Scene {
     }
 
     this.questionIndex++;
-    const testPrefix = this.isCumulativeExam ? 'EXAM' : 'TEST';
+    let testPrefix = 'TEST';
+    if (this.isReviewMode) {
+      testPrefix = 'REVIEW';
+    } else if (this.isCumulativeExam) {
+      testPrefix = 'EXAM';
+    }
     this.progressText.setText(`${testPrefix}: ${this.questionIndex}/${this.totalEncounters}`);
     this.promptBanner.setVisible(false);
     this.actionDeck.clearButtons();
@@ -603,6 +640,26 @@ export class PlayScene extends Phaser.Scene {
       this.promptText.setText(correctText);
       this.promptText.setColor('#ffffff');
 
+      // Record mistake for End-of-Round Review
+      const promptStr = this.isTheoryEncounter
+        ? (this.currentTheory?.prompt || 'Theory Question')
+        : (this.currentTerm?.english || this.currentTerm?.korean || 'Technique');
+
+      const alreadyLogged = this.roundMistakes.some(m =>
+        (this.currentTerm && m.term?.id === this.currentTerm.id) ||
+        (this.currentTheory && m.theory?.id === this.currentTheory.id)
+      );
+
+      if (!alreadyLogged) {
+        this.roundMistakes.push({
+          type: this.isTheoryEncounter ? 'theory' : 'technique',
+          term: this.currentTerm || undefined,
+          theory: this.currentTheory || undefined,
+          prompt: promptStr,
+          correctAnswer: correctText
+        });
+      }
+
       // Give 1.5s to read before moving to next question or ending game
       this.time.delayedCall(1600, () => {
         this.isProcessingResult = false;
@@ -677,7 +734,8 @@ export class PlayScene extends Phaser.Scene {
         grade: this.grade,
         stats: this.stats,
         passed: passed,
-        isCumulativeExam: this.isCumulativeExam
+        isCumulativeExam: this.isCumulativeExam,
+        roundMistakes: this.roundMistakes
       });
     });
   }
