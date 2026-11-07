@@ -98,14 +98,15 @@ export const HANGUL_MAP: Record<string, PronunciationEntry> = {
 
 export interface AvailableVoice {
   name: string;
+  friendlyName: string;
   lang: string;
   voiceURI: string;
   isKorean: boolean;
   isEnglish: boolean;
-  isMale: boolean;
+  gender: 'male' | 'female' | 'unknown';
   isLocal: boolean;
   label: string;
-  category: 'korean_male' | 'korean_female' | 'english_male' | 'english_female' | 'other';
+  category: 'korean_male' | 'english_male' | 'korean_other' | 'english_other' | 'korean_female' | 'english_female';
 }
 
 export interface PronunciationResult {
@@ -113,6 +114,71 @@ export interface PronunciationResult {
   isHangul: boolean;
   hangulText: string;
   phoneticText: string;
+}
+
+export function parseVoiceMetadata(name: string, lang: string, voiceURI?: string): { friendlyName: string; gender: 'male' | 'female' | 'unknown' } {
+  const lower = `${name} ${voiceURI || ''} ${lang}`.toLowerCase();
+
+  // 1. Android Google TTS specific code checks
+  if (lower.includes('en-gb-x-rjs')) return { friendlyName: 'Google UK English (Voice 2)', gender: 'male' };
+  if (lower.includes('en-gb-x-fis')) return { friendlyName: 'Google UK English (Voice 1)', gender: 'female' };
+  if (lower.includes('en-gb-x-gba') || lower.includes('en-gb-x-gbb') || lower.includes('en-gb-x-gbc') || lower.includes('en-gb-x-gbd')) {
+    return { friendlyName: 'Google UK English (Voice 2)', gender: 'male' };
+  }
+  if (lower.includes('en-us-x-iom') || lower.includes('en-us-x-iol') || lower.includes('en-us-x-sfb') || lower.includes('en-us-x-sfd')) {
+    return { friendlyName: 'Google US English (Voice 2)', gender: 'male' };
+  }
+  if (lower.includes('en-us-x-sfg') || lower.includes('en-us-x-tpf') || lower.includes('en-us-x-sfa') || lower.includes('en-us-x-sfc')) {
+    return { friendlyName: 'Google US English (Voice 1)', gender: 'female' };
+  }
+  if (lower.includes('ko-kr-x-ism')) return { friendlyName: 'Google Korean (Voice 2)', gender: 'male' };
+  if (lower.includes('ko-kr-x-koc')) return { friendlyName: 'Google Korean (Voice 3)', gender: 'male' };
+  if (lower.includes('ko-kr-x-kod')) return { friendlyName: 'Google Korean (Voice 4)', gender: 'male' };
+  if (lower.includes('ko-kr-x-kof')) return { friendlyName: 'Google Korean (Voice 1)', gender: 'female' };
+  if (lower.includes('ko-kr-x-kob') || lower.includes('ko-kr-x-koa')) return { friendlyName: 'Google Korean (Voice 1)', gender: 'female' };
+
+  if (lower.includes('ko-kr-language')) return { friendlyName: 'Android Korean System', gender: 'unknown' };
+  if (lower.includes('en-gb-language')) return { friendlyName: 'Android UK English System', gender: 'unknown' };
+  if (lower.includes('en-us-language')) return { friendlyName: 'Android US English System', gender: 'unknown' };
+
+  // 2. Google Cloud / Neural / Wavenet / Standard
+  if (lower.includes('neural2-c') || lower.includes('neural2-d') || lower.includes('neural2-b') || lower.includes('neural2-j') ||
+      lower.includes('wavenet-c') || lower.includes('wavenet-d') || lower.includes('wavenet-b') || lower.includes('wavenet-j') ||
+      lower.includes('standard-c') || lower.includes('standard-d') || lower.includes('standard-b') || lower.includes('standard-j')) {
+    return { friendlyName: name, gender: 'male' };
+  }
+  if (lower.includes('neural2-a') || lower.includes('neural2-e') || lower.includes('neural2-f') ||
+      lower.includes('wavenet-a') || lower.includes('wavenet-e') || lower.includes('wavenet-f') ||
+      lower.includes('standard-a') || lower.includes('standard-e') || lower.includes('standard-f')) {
+    return { friendlyName: name, gender: 'female' };
+  }
+
+  // 3. Known Apple/Windows/Local names
+  const maleKeywords = [
+    'reed', 'eddy', 'rocko', 'grandpa',
+    'injoon', 'minsu', 'min-su',
+    'voice ii', 'voice 2', 'voice iii', 'voice 3', 'voice v', 'voice 5',
+    'voice-2', 'voice-3', 'voice-5',
+    'daniel', 'oliver', 'george', 'arthur', 'alex', 'david', 'james', 'fred', 'ryan', 'malcolm', 'brian',
+    '#male', 'male', '남성', '남자'
+  ];
+  if (maleKeywords.some(kw => lower.includes(kw))) {
+    return { friendlyName: name, gender: 'male' };
+  }
+
+  const femaleKeywords = [
+    'yuna', 'flo', 'sandy', 'shelley', 'grandma',
+    'heami', 'sunhi',
+    'voice i', 'voice 1', 'voice iv', 'voice 4',
+    'voice-1', 'voice-4',
+    'samantha', 'victoria', 'karen', 'moira', 'tessa',
+    '#female', 'female', 'woman', '여성', '여자'
+  ];
+  if (femaleKeywords.some(kw => lower.includes(kw))) {
+    return { friendlyName: name, gender: 'female' };
+  }
+
+  return { friendlyName: name, gender: 'unknown' };
 }
 
 class SpeechManager {
@@ -206,35 +272,13 @@ class SpeechManager {
 
   /**
    * Retrieves all available English and Korean voices discovered on the user's device,
-   * categorizing them by language and gender heuristic.
+   * categorizing them with friendly names and gender classification.
    */
   public getAvailableVoices(): AvailableVoice[] {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return [];
 
     const rawVoices = window.speechSynthesis.getVoices();
     if (!rawVoices || rawVoices.length === 0) return [];
-
-    const maleKeywords = [
-      'reed', 'eddy', 'rocko', 'grandpa',
-      'injoon', 'minsu', 'min-su',
-      'ism', 'koc', 'kod',
-      'voice ii', 'voice 2', 'voice iii', 'voice 3', 'voice v', 'voice 5',
-      'voice-2', 'voice-3', 'voice-5',
-      'standard-c', 'standard-d', 'wavenet-c', 'wavenet-d', 'neural2-c', 'neural2-d',
-      'daniel', 'oliver', 'george', 'arthur', 'alex', 'david', 'james', 'fred', 'ryan', 'malcolm', 'brian',
-      'male', '#male', '남성', '남자'
-    ];
-
-    const femaleKeywords = [
-      'yuna', 'flo', 'sandy', 'shelley', 'grandma',
-      'heami', 'sunhi',
-      'kof', 'kob', 'koa',
-      'voice i', 'voice 1', 'voice iv', 'voice 4',
-      'voice-1', 'voice-4',
-      'standard-a', 'standard-b', 'wavenet-a', 'wavenet-b', 'neural2-a', 'neural2-b',
-      'samantha', 'victoria', 'karen', 'moira', 'tessa',
-      'female', '#female', 'woman', '여성', '여자'
-    ];
 
     const results: AvailableVoice[] = [];
     const seenURIs = new Set<string>();
@@ -250,48 +294,69 @@ class SpeechManager {
       if (!isKorean && !isEnglish) continue;
       seenURIs.add(uri);
 
-      const desc = `${v.name} ${v.voiceURI || ''}`.toLowerCase();
-      const isMale = maleKeywords.some(kw => desc.includes(kw));
-      const isFemale = femaleKeywords.some(kw => desc.includes(kw));
+      const { friendlyName, gender } = parseVoiceMetadata(v.name, v.lang, v.voiceURI);
 
-      let category: AvailableVoice['category'] = 'other';
+      let category: AvailableVoice['category'];
       if (isKorean) {
-        category = isMale ? 'korean_male' : 'korean_female';
-      } else if (isEnglish) {
-        category = isMale ? 'english_male' : 'english_female';
+        if (gender === 'male') category = 'korean_male';
+        else if (gender === 'female') category = 'korean_female';
+        else category = 'korean_other';
+      } else {
+        if (gender === 'male') category = 'english_male';
+        else if (gender === 'female') category = 'english_female';
+        else category = 'english_other';
       }
 
-      const genderTag = isMale ? 'Male' : (isFemale ? 'Female' : 'Voice');
+      const genderTag = gender === 'male' ? 'Male' : (gender === 'female' ? 'Female' : 'Voice');
       const langTag = isKorean ? 'Korean' : (v.lang || 'English');
-      const label = `${v.name} (${langTag}) [${genderTag}]`;
+      const label = `${friendlyName} (${langTag}) [${genderTag}]`;
 
       results.push({
         name: v.name,
+        friendlyName,
         lang: v.lang,
         voiceURI: uri,
         isKorean,
         isEnglish,
-        isMale,
+        gender,
         isLocal: Boolean(v.localService),
         label,
         category
       });
     }
 
-    // Sort order: Korean Male first, then Korean Female, then English Male, then English Female, then other
+    // Sort order: Korean Male first, then English Male, then Korean Other, then English Other, then Female voices
     const sortOrder: Record<AvailableVoice['category'], number> = {
       korean_male: 0,
-      korean_female: 1,
-      english_male: 2,
-      english_female: 3,
-      other: 4
+      english_male: 1,
+      korean_other: 2,
+      english_other: 3,
+      korean_female: 4,
+      english_female: 5
     };
 
     return results.sort((a, b) => {
       const catDiff = sortOrder[a.category] - sortOrder[b.category];
       if (catDiff !== 0) return catDiff;
-      return a.name.localeCompare(b.name);
+      return a.friendlyName.localeCompare(b.friendlyName);
     });
+  }
+
+  public getActiveVoiceLabel(): string {
+    const preferredURI = this.getSelectedVoiceURI();
+    if (preferredURI && preferredURI !== 'auto') {
+      const voices = this.getAvailableVoices();
+      const found = voices.find(v => v.voiceURI === preferredURI);
+      if (found) {
+        const gTag = found.gender === 'male' ? '[MALE]' : (found.gender === 'female' ? '[FEMALE]' : '');
+        return `${found.friendlyName} ${gTag}`.trim();
+      }
+    }
+    if (this.koreanMaleVoice) {
+      const gTag = this.isExplicitMale ? '[MALE]' : '';
+      return `Auto-Detect (${this.koreanMaleVoice.name}) ${gTag}`.trim();
+    }
+    return 'Auto-Detect (Default)';
   }
 
   /**

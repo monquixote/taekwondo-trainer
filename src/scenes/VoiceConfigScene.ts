@@ -13,7 +13,8 @@ export class VoiceConfigScene extends Phaser.Scene {
   private pageText!: Phaser.GameObjects.Text;
   private prevButton!: Phaser.GameObjects.Text;
   private nextButton!: Phaser.GameObjects.Text;
-  private filterButtons: Record<FilterType, { bg: Phaser.GameObjects.Graphics; text: Phaser.GameObjects.Text }> = {} as any;
+  private activeVoiceText!: Phaser.GameObjects.Text;
+  private filterButtons: Record<FilterType, { bg: Phaser.GameObjects.Graphics; text: Phaser.GameObjects.Text; w: number }> = {} as any;
 
   constructor() {
     super('VoiceConfigScene');
@@ -38,8 +39,8 @@ export class VoiceConfigScene extends Phaser.Scene {
     overlay.fillStyle(0x0a0c16, 0.88);
     overlay.fillRect(0, 0, width, height);
 
-    // 2. Title
-    this.add.text(width / 2, 20, '◆ VOICE CONFIGURATION ◆', {
+    // 2. Title & Active Voice display
+    this.add.text(width / 2, 17, '◆ VOICE CONFIGURATION ◆', {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '11px',
       color: '#ffe135',
@@ -47,10 +48,10 @@ export class VoiceConfigScene extends Phaser.Scene {
       strokeThickness: 3
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, 36, 'SELECT SPOKEN VOICE FOR TERMINOLOGY', {
+    this.activeVoiceText = this.add.text(width / 2, 33, `ACTIVE: ${speechManager.getActiveVoiceLabel()}`, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '6px',
-      color: '#aaaaaa'
+      fontSize: '6.5px',
+      color: '#00ffaa'
     }).setOrigin(0.5);
 
     // 3. Sound Toggle (Top Right)
@@ -64,18 +65,18 @@ export class VoiceConfigScene extends Phaser.Scene {
     });
 
     // 4. Filter Tabs (All / Korean / English)
-    const filterY = 56;
+    const filterY = 54;
     const filters: { id: FilterType; label: string; x: number; w: number }[] = [
-      { id: 'all', label: 'ALL', x: width / 2 - 100, w: 60 },
-      { id: 'korean', label: 'KOREAN', x: width / 2, w: 90 },
-      { id: 'english', label: 'ENGLISH', x: width / 2 + 100, w: 90 }
+      { id: 'all', label: 'ALL', x: width / 2 - 120, w: 70 },
+      { id: 'korean', label: 'KOREAN', x: width / 2, w: 110 },
+      { id: 'english', label: 'ENGLISH', x: width / 2 + 120, w: 110 }
     ];
 
     filters.forEach(f => {
       const g = this.add.graphics();
       const txt = this.add.text(f.x, filterY, f.label, {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
+        fontSize: '6.5px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
@@ -85,7 +86,7 @@ export class VoiceConfigScene extends Phaser.Scene {
         this.setFilter(f.id);
       });
 
-      this.filterButtons[f.id] = { bg: g, text: txt };
+      this.filterButtons[f.id] = { bg: g, text: txt, w: f.w };
     });
 
     // 5. Container for voice cards
@@ -169,6 +170,7 @@ export class VoiceConfigScene extends Phaser.Scene {
     // Dynamic voice reload if voices load asynchronously
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.onvoiceschanged = () => {
+        this.updateFilterButtons();
         this.renderVoiceList();
       };
     }
@@ -186,16 +188,22 @@ export class VoiceConfigScene extends Phaser.Scene {
   }
 
   private updateFilterButtons(): void {
-    const filters: { id: FilterType; w: number }[] = [
-      { id: 'all', w: 60 },
-      { id: 'korean', w: 90 },
-      { id: 'english', w: 90 }
-    ];
+    const rawVoices = speechManager.getAvailableVoices();
+    const koCount = rawVoices.filter(v => v.isKorean).length;
+    const enCount = rawVoices.filter(v => v.isEnglish).length;
+    const allCount = rawVoices.length;
 
-    filters.forEach(f => {
-      const btn = this.filterButtons[f.id];
+    const filterLabels: Record<FilterType, string> = {
+      all: `ALL (${allCount})`,
+      korean: `KOREAN (${koCount})`,
+      english: `ENGLISH (${enCount})`
+    };
+
+    (['all', 'korean', 'english'] as FilterType[]).forEach(id => {
+      const btn = this.filterButtons[id];
       if (!btn) return;
-      const isActive = this.currentFilter === f.id;
+      const isActive = this.currentFilter === id;
+      btn.text.setText(filterLabels[id]);
 
       btn.bg.clear();
       if (isActive) {
@@ -210,8 +218,8 @@ export class VoiceConfigScene extends Phaser.Scene {
 
       const x = btn.text.x;
       const y = btn.text.y;
-      btn.bg.fillRect(x - f.w / 2, y - 9, f.w, 18);
-      btn.bg.strokeRect(x - f.w / 2, y - 9, f.w, 18);
+      btn.bg.fillRect(x - btn.w / 2, y - 9, btn.w, 18);
+      btn.bg.strokeRect(x - btn.w / 2, y - 9, btn.w, 18);
     });
   }
 
@@ -248,6 +256,10 @@ export class VoiceConfigScene extends Phaser.Scene {
     this.pageText.setText(`PAGE ${this.currentPage + 1} / ${totalPages} (${items.length} VOICES)`);
     this.prevButton.setAlpha(this.currentPage > 0 ? 1 : 0.35);
     this.nextButton.setAlpha(this.currentPage < totalPages - 1 ? 1 : 0.35);
+
+    if (this.activeVoiceText) {
+      this.activeVoiceText.setText(`ACTIVE: ${speechManager.getActiveVoiceLabel()}`);
+    }
 
     const startIndex = this.currentPage * this.itemsPerPage;
     const pageItems = items.slice(startIndex, startIndex + this.itemsPerPage);
@@ -296,15 +308,20 @@ export class VoiceConfigScene extends Phaser.Scene {
         title = 'AUTO-DETECT (RECOMMENDED)';
         desc = 'Optimal Korean Male voice for your device';
       } else {
-        const gender = item.isMale ? 'MALE' : 'FEMALE';
+        let genderBadge = '';
+        if (item.gender === 'male') {
+          genderBadge = ' [MALE]';
+        } else if (item.gender === 'female') {
+          genderBadge = ' [FEMALE]';
+        }
         const langName = item.isKorean ? 'KOREAN (Native Hangul)' : 'ENGLISH (Phonetic)';
-        title = `${item.name.substring(0, 24)} [${gender}]`;
+        title = `${item.friendlyName.substring(0, 26)}${genderBadge}`;
         desc = `${item.lang} • ${langName}`;
       }
 
       const titleText = this.add.text(-cardW / 2 + 30, -5, title, {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
+        fontSize: '6.5px',
         color: isSelected ? '#00ffaa' : '#ffffff'
       }).setOrigin(0, 0.5);
 
