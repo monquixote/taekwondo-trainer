@@ -215,9 +215,9 @@ class SpeechManager {
         utterance.lang = 'ko-KR';
       }
 
-      // Measured, authentic Korean martial arts instructor delivery with masculine resonance
+      // Measured, authentic Korean martial arts instructor delivery at natural pitch
       utterance.rate = 0.90;
-      utterance.pitch = 0.90;
+      utterance.pitch = 1.0;
       utterance.volume = 1.0;
 
       // Robust fallback if a specific voice fails to synthesize
@@ -228,7 +228,7 @@ class SpeechManager {
             const fallbackUtterance = new SpeechSynthesisUtterance(text);
             fallbackUtterance.lang = isHangul ? 'ko-KR' : 'en-GB';
             fallbackUtterance.rate = 0.90;
-            fallbackUtterance.pitch = 0.90;
+            fallbackUtterance.pitch = 1.0;
             window.speechSynthesis.speak(fallbackUtterance);
           } catch (err) {
             console.warn('Fallback speech error:', err);
