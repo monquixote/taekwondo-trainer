@@ -7,6 +7,7 @@ import { ActionDeck, ActionDeckOption } from '../objects/ActionDeck';
 import { soundFx } from '../utils/soundEffects';
 import { KOREAN_DICTIONARY } from '../data/dictionary';
 import { buildEncounterDeck, EncounterCard } from '../utils/deckBuilder';
+import { speechManager } from '../utils/pronunciation';
 
 export interface RoundMistake {
   type: 'technique' | 'theory';
@@ -41,6 +42,8 @@ export class PlayScene extends Phaser.Scene {
   private promptBanner!: Phaser.GameObjects.Container;
   private promptText!: Phaser.GameObjects.Text;
   private categoryBadgeText!: Phaser.GameObjects.Text;
+  private promptAudioBtn!: Phaser.GameObjects.Text;
+  private currentSpokenKorean: string | null = null;
 
   // State
   private questionIndex: number = 0;
@@ -93,6 +96,7 @@ export class PlayScene extends Phaser.Scene {
     this.customCorrectionText = null;
     this.isTheoryEncounter = false;
     this.currentEncounterCard = null;
+    this.currentSpokenKorean = null;
     this.roundMistakes = [];
     this.isReviewMode = Boolean(data.retryMistakes && data.retryMistakes.length > 0);
 
@@ -160,6 +164,12 @@ export class PlayScene extends Phaser.Scene {
     if (this.input.keyboard) {
       this.input.keyboard.on('keydown-ESC', () => {
         this.quitToMenu();
+      });
+      this.input.keyboard.on('keydown-V', () => {
+        this.speakCurrentPrompt();
+      });
+      this.input.keyboard.on('keydown-P', () => {
+        this.speakCurrentPrompt();
       });
     }
 
@@ -265,8 +275,32 @@ export class PlayScene extends Phaser.Scene {
       wordWrap: { width: 440 }
     }).setOrigin(0.5, 0.5);
 
-    this.promptBanner.add([bannerBg, this.categoryBadgeText, this.promptText]);
+    // Audio button in the prompt banner (visible when prompt contains Korean to speak)
+    this.promptAudioBtn = this.add.text(bannerW / 2 - 20, 0, '🔊', {
+      fontSize: '13px'
+    }).setOrigin(0.5, 0.5).setInteractive({ useHandCursor: true });
+    this.promptAudioBtn.on('pointerdown', () => this.speakCurrentPrompt());
+    this.promptAudioBtn.on('pointerover', () => this.promptAudioBtn.setScale(1.2));
+    this.promptAudioBtn.on('pointerout', () => this.promptAudioBtn.setScale(1.0));
+    this.promptAudioBtn.setVisible(false);
+
+    this.promptBanner.add([bannerBg, this.categoryBadgeText, this.promptText, this.promptAudioBtn]);
     this.promptBanner.setVisible(false);
+  }
+
+  private speakCurrentPrompt(): void {
+    if (this.currentSpokenKorean) {
+      speechManager.speakKorean(this.currentSpokenKorean);
+      if (this.promptAudioBtn) {
+        this.tweens.add({
+          targets: this.promptAudioBtn,
+          scale: 1.35,
+          duration: 100,
+          yoyo: true,
+          ease: 'Quad.easeOut'
+        });
+      }
+    }
   }
 
   private startNextEncounter(): void {
@@ -346,6 +380,8 @@ export class PlayScene extends Phaser.Scene {
       // Theory Question with Sifu (from smart spaced-repetition deck)
       this.currentTheory = this.currentEncounterCard?.theory || this.grade.theory[0];
       this.currentTerm = null;
+      this.currentSpokenKorean = null;
+      this.promptAudioBtn.setVisible(false);
 
       this.categoryBadgeText.setText('◆ SIFU THEORY QUESTION ◆');
       this.categoryBadgeText.setColor('#00ffaa');
@@ -377,6 +413,10 @@ export class PlayScene extends Phaser.Scene {
 
       if (isReverse) {
         // Reverse: Korean -> English
+        this.currentSpokenKorean = term.korean;
+        this.promptAudioBtn.setVisible(true);
+        speechManager.speakKorean(term.korean);
+
         const categoryLabel = `◆ TRANSLATE ◆`;
         this.categoryBadgeText.setText(categoryLabel);
         this.categoryBadgeText.setColor('#ff99ff');
@@ -402,6 +442,8 @@ export class PlayScene extends Phaser.Scene {
         }));
       } else if (this.isHardMode) {
         // Hard Mode: Build sentence word by word (English -> Korean)
+        this.currentSpokenKorean = null;
+        this.promptAudioBtn.setVisible(false);
         this.isBuildingSentence = true;
         this.targetWords = term.korean.replace(/[()]/g, '').trim().split(/\s+/);
         this.currentWordIndex = 0;
@@ -420,6 +462,9 @@ export class PlayScene extends Phaser.Scene {
           const targetKorean = Phaser.Utils.Array.GetRandom(vocabWords);
           const targetEnglish = KOREAN_DICTIONARY[targetKorean];
           this.customCorrectionText = targetEnglish;
+          this.currentSpokenKorean = targetKorean;
+          this.promptAudioBtn.setVisible(true);
+          speechManager.speakKorean(targetKorean);
 
           const categoryLabel = `◆ VOCABULARY ◆`;
           this.categoryBadgeText.setText(categoryLabel);
@@ -445,6 +490,8 @@ export class PlayScene extends Phaser.Scene {
           }));
         } else {
           // Full phrase execution
+          this.currentSpokenKorean = null;
+          this.promptAudioBtn.setVisible(false);
           const categoryLabel = `◆ EXECUTE ◆`;
           this.categoryBadgeText.setText(categoryLabel);
           this.categoryBadgeText.setColor('#ffe135');
@@ -574,6 +621,11 @@ export class PlayScene extends Phaser.Scene {
       recordAnswerAttempt(this.stats, termId, true);
       this.updateHUD();
 
+      // Speak the Korean technique name upon successful strike
+      if (this.currentTerm?.korean) {
+        speechManager.speakKorean(this.currentTerm.korean);
+      }
+
       // Sound effect
       if (this.currentTerm?.category === 'kick') {
         soundFx.playKick();
@@ -639,6 +691,11 @@ export class PlayScene extends Phaser.Scene {
       this.categoryBadgeText.setColor('#ff4444');
       this.promptText.setText(correctText);
       this.promptText.setColor('#ffffff');
+
+      // Speak the Korean correction if applicable
+      if (this.currentTerm?.korean && !this.customCorrectionText) {
+        speechManager.speakKorean(this.currentTerm.korean);
+      }
 
       // Record mistake for End-of-Round Review
       const promptStr = this.isTheoryEncounter
@@ -717,6 +774,7 @@ export class PlayScene extends Phaser.Scene {
   private quitToMenu(): void {
     if (this.isTransitioning) return;
     this.isTransitioning = true;
+    speechManager.stop();
     soundFx.playSelect();
     this.time.delayedCall(50, () => {
       this.scene.start('MenuScene', { gradeId: this.grade.id });
@@ -726,6 +784,7 @@ export class PlayScene extends Phaser.Scene {
   private endGame(passed: boolean): void {
     if (this.isTransitioning) return;
     this.isTransitioning = true;
+    speechManager.stop();
     if (passed) {
       soundFx.playFanfare();
     }

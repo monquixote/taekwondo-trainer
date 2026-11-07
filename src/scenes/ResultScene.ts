@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { KupGrade, PlayerStats } from '../data/types';
 import { soundFx } from '../utils/soundEffects';
 import { RoundMistake } from './PlayScene';
+import { speechManager } from '../utils/pronunciation';
 
 interface ResultSceneInitData {
   grade: KupGrade;
@@ -129,11 +130,11 @@ export class ResultScene extends Phaser.Scene {
 
         // Truncate prompt if long
         const promptRaw = m.prompt;
-        const promptDisplay = promptRaw.length > 22 ? promptRaw.substring(0, 20) + '..' : promptRaw;
+        const promptDisplay = promptRaw.length > 20 ? promptRaw.substring(0, 18) + '..' : promptRaw;
 
         // Truncate answer if long
         const answerRaw = m.correctAnswer;
-        const answerDisplay = answerRaw.length > 25 ? answerRaw.substring(0, 23) + '..' : answerRaw;
+        const answerDisplay = answerRaw.length > 22 ? answerRaw.substring(0, 20) + '..' : answerRaw;
 
         // Question Prompt (Left)
         this.add.text(boxX + 16, rowY, `✗ ${promptDisplay}`, {
@@ -142,12 +143,33 @@ export class ResultScene extends Phaser.Scene {
           color: '#ffffff'
         }).setOrigin(0, 0.5);
 
-        // Correct Answer (Right)
-        this.add.text(boxX + 215, rowY, `➔ ${answerDisplay}`, {
+        // Correct Answer (Center)
+        this.add.text(boxX + 190, rowY, `➔ ${answerDisplay}`, {
           fontFamily: "'Press Start 2P', monospace",
           fontSize: '7px',
           color: '#00ff88'
         }).setOrigin(0, 0.5);
+
+        // Clickable Korean pronunciation button for this mistake
+        const koreanTerm = m.term?.korean || (m.type === 'technique' ? m.correctAnswer : null);
+        if (koreanTerm) {
+          const speaker = this.add.text(boxX + boxW - 18, rowY, '🔊', {
+            fontSize: '11px'
+          }).setOrigin(0.5, 0.5).setInteractive({ useHandCursor: true });
+
+          speaker.on('pointerdown', () => {
+            speechManager.speakKorean(koreanTerm);
+            this.tweens.add({
+              targets: speaker,
+              scale: 1.35,
+              duration: 100,
+              yoyo: true,
+              ease: 'Quad.easeOut'
+            });
+          });
+          speaker.on('pointerover', () => speaker.setScale(1.2));
+          speaker.on('pointerout', () => speaker.setScale(1.0));
+        }
       }
 
       if (hasOverflow) {
@@ -160,7 +182,7 @@ export class ResultScene extends Phaser.Scene {
       }
 
       // Review tip at bottom of box
-      this.add.text(width / 2, boxY + boxH - 12, '💡 Tip: Click RETRY MISSED to immediately drill these mistakes!', {
+      this.add.text(width / 2, boxY + boxH - 12, '💡 Click 🔊 to hear pronunciation | RETRY MISSED to drill!', {
         fontFamily: "'Press Start 2P', monospace",
         fontSize: '6px',
         color: '#ffbb44'
@@ -175,6 +197,7 @@ export class ResultScene extends Phaser.Scene {
     const handleFullRetry = () => {
       if (isTransitioning) return;
       isTransitioning = true;
+      speechManager.stop();
       soundFx.playSelect();
       this.time.delayedCall(50, () => {
         this.scene.start('PlayScene', {
@@ -187,6 +210,7 @@ export class ResultScene extends Phaser.Scene {
     const handleRetryMissed = () => {
       if (isTransitioning) return;
       isTransitioning = true;
+      speechManager.stop();
       soundFx.playSelect();
       this.time.delayedCall(50, () => {
         this.scene.start('PlayScene', {
@@ -200,6 +224,7 @@ export class ResultScene extends Phaser.Scene {
     const handleMenu = () => {
       if (isTransitioning) return;
       isTransitioning = true;
+      speechManager.stop();
       soundFx.playSelect();
       this.time.delayedCall(50, () => {
         this.scene.start('MenuScene', { gradeId: this.grade.id });
