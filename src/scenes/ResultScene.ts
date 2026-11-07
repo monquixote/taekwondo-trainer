@@ -1,17 +1,20 @@
 import Phaser from 'phaser';
 import { KupGrade, PlayerStats } from '../data/types';
+import { ALL_GRADES } from '../data/grades';
 import { soundFx } from '../utils/soundEffects';
 
 interface ResultSceneInitData {
   grade: KupGrade;
   stats: PlayerStats;
   passed: boolean;
+  isCumulativeExam?: boolean;
 }
 
 export class ResultScene extends Phaser.Scene {
   private grade!: KupGrade;
   private stats!: PlayerStats;
   private passed!: boolean;
+  private isCumulativeExam: boolean = false;
 
   constructor() {
     super('ResultScene');
@@ -21,6 +24,9 @@ export class ResultScene extends Phaser.Scene {
     this.grade = data.grade;
     this.stats = data.stats;
     this.passed = data.passed;
+    this.isCumulativeExam = data.isCumulativeExam !== undefined
+      ? data.isCumulativeExam
+      : localStorage.getItem('tagb_cumulative_exam') === 'true';
   }
 
   create(): void {
@@ -46,9 +52,13 @@ export class ResultScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Grade Title
-    this.add.text(width / 2, 54, this.grade.title, {
+    const gradeTitleText = this.isCumulativeExam
+      ? `${this.grade.title} (CUMULATIVE EXAM)`
+      : this.grade.title;
+
+    this.add.text(width / 2, 54, gradeTitleText, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '8px',
+      fontSize: '7px',
       color: '#ffe135'
     }).setOrigin(0.5);
 
@@ -68,7 +78,11 @@ export class ResultScene extends Phaser.Scene {
 
     // Review of Missed Items (Spaced Repetition / Study Tip)
     const reviewBoxY = 120;
-    const missedTerms = this.grade.terms.filter(t => {
+    const includedGrades = this.isCumulativeExam
+      ? ALL_GRADES.filter(g => g.gradeNumber >= this.grade.gradeNumber)
+      : [this.grade];
+    const candidateTerms = includedGrades.flatMap(g => g.terms);
+    const missedTerms = candidateTerms.filter(t => {
       const rec = this.stats.termAccuracy[t.id];
       return rec && rec.incorrect > 0;
     });
@@ -127,7 +141,10 @@ export class ResultScene extends Phaser.Scene {
       isTransitioning = true;
       soundFx.playSelect();
       this.time.delayedCall(50, () => {
-        this.scene.start('PlayScene', { grade: this.grade });
+        this.scene.start('PlayScene', {
+          grade: this.grade,
+          isCumulativeExam: this.isCumulativeExam
+        });
       });
     };
 

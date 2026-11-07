@@ -6,10 +6,12 @@ import { Enemy, EnemyType } from '../objects/Enemy';
 import { ActionDeck, ActionDeckOption } from '../objects/ActionDeck';
 import { soundFx } from '../utils/soundEffects';
 import { KOREAN_DICTIONARY } from '../data/dictionary';
+import { buildEncounterDeck, EncounterCard } from '../utils/deckBuilder';
 
 interface PlaySceneInitData {
   grade: KupGrade;
   isHardMode?: boolean;
+  isCumulativeExam?: boolean;
 }
 
 export class PlayScene extends Phaser.Scene {
@@ -41,6 +43,12 @@ export class PlayScene extends Phaser.Scene {
   private isProcessingResult: boolean = false;
   private isTransitioning: boolean = false;
 
+  // Spaced-Repetition Deck & Cumulative Exam State
+  private isCumulativeExam: boolean = false;
+  private encounterDeck: EncounterCard[] = [];
+  private allCandidateTerms: TermItem[] = [];
+  private currentEncounterCard: EncounterCard | null = null;
+
   // Hard Mode State
   private isHardMode: boolean = false;
   private isBuildingSentence: boolean = false;
@@ -58,6 +66,7 @@ export class PlayScene extends Phaser.Scene {
       localStorage.setItem('tagb_selected_grade', this.grade.id);
     }
     this.isHardMode = data.isHardMode !== undefined ? data.isHardMode : localStorage.getItem('tagb_hard_mode') === 'true';
+    this.isCumulativeExam = data.isCumulativeExam !== undefined ? data.isCumulativeExam : localStorage.getItem('tagb_cumulative_exam') === 'true';
     this.stats = loadPlayerStats();
     // Start with max health for new session
     this.stats.health = this.stats.maxHealth;
@@ -74,6 +83,17 @@ export class PlayScene extends Phaser.Scene {
     this.currentTheory = null;
     this.customCorrectionText = null;
     this.isTheoryEncounter = false;
+    this.currentEncounterCard = null;
+
+    // Build smart spaced-repetition deck (weighted against student weaknesses, no duplicate questions)
+    const { deck, allCandidateTerms } = buildEncounterDeck({
+      grade: this.grade,
+      isCumulativeExam: this.isCumulativeExam,
+      totalEncounters: this.totalEncounters,
+      stats: this.stats
+    });
+    this.encounterDeck = deck;
+    this.allCandidateTerms = allCandidateTerms;
   }
 
   create(): void {
@@ -229,12 +249,14 @@ export class PlayScene extends Phaser.Scene {
     }
 
     this.questionIndex++;
-    this.progressText.setText(`TEST: ${this.questionIndex}/${this.totalEncounters}`);
+    const testPrefix = this.isCumulativeExam ? 'EXAM' : 'TEST';
+    this.progressText.setText(`${testPrefix}: ${this.questionIndex}/${this.totalEncounters}`);
     this.promptBanner.setVisible(false);
     this.actionDeck.clearButtons();
 
-    // Decide if this is a Theory encounter (every 4th question or final boss)
-    this.isTheoryEncounter = (this.questionIndex % 4 === 0 || this.questionIndex === this.totalEncounters) && this.grade.theory.length > 0;
+    // Pull current card from smart encounter deck
+    this.currentEncounterCard = this.encounterDeck[this.questionIndex - 1] || null;
+    this.isTheoryEncounter = this.currentEncounterCard?.type === 'theory';
 
     // Jog forward on rails (Background scrolls, player runs)
     const runDuration = 800;
@@ -284,9 +306,8 @@ export class PlayScene extends Phaser.Scene {
     let options: ActionDeckOption[] = [];
 
     if (this.isTheoryEncounter) {
-      // Theory Question with Sifu
-      const theoryIndex = Math.floor(Math.random() * this.grade.theory.length);
-      this.currentTheory = this.grade.theory[theoryIndex];
+      // Theory Question with Sifu (from smart spaced-repetition deck)
+      this.currentTheory = this.currentEncounterCard?.theory || this.grade.theory[0];
       this.currentTerm = null;
 
       this.categoryBadgeText.setText('◆ SIFU THEORY QUESTION ◆');
@@ -309,9 +330,8 @@ export class PlayScene extends Phaser.Scene {
       }));
 
     } else {
-      // Technique Question
-      const termPool = this.grade.terms;
-      const term = termPool[Math.floor(Math.random() * termPool.length)];
+      // Technique Question (from smart spaced-repetition deck)
+      const term = this.currentEncounterCard?.term || this.grade.terms[0];
       this.currentTerm = term;
       this.currentTheory = null;
 
@@ -326,7 +346,7 @@ export class PlayScene extends Phaser.Scene {
         this.promptText.setText(term.korean);
         this.promptBanner.setVisible(true);
 
-        const distractors = termPool
+        const distractors = this.allCandidateTerms
           .filter(t => t.id !== term.id)
           .map(t => t.english);
         Phaser.Utils.Array.Shuffle(distractors);
@@ -394,8 +414,8 @@ export class PlayScene extends Phaser.Scene {
           this.promptText.setText(term.english);
           this.promptBanner.setVisible(true);
 
-          // Collect 3 distractors from terms
-          const distractors = termPool
+          // Collect 3 distractors from candidate terms
+          const distractors = this.allCandidateTerms
             .filter(t => t.id !== term.id)
             .map(t => t.korean);
           Phaser.Utils.Array.Shuffle(distractors);
@@ -434,7 +454,6 @@ export class PlayScene extends Phaser.Scene {
   private presentNextWord(): void {
     if (!this.currentTerm) return;
 
-    const termPool = this.grade.terms;
     const targetWord = this.targetWords[this.currentWordIndex];
 
     const categoryLabel = `◆ BUILD ◆`;
@@ -451,9 +470,9 @@ export class PlayScene extends Phaser.Scene {
     this.promptText.setText(`${this.currentTerm.english}\n${sentenceDisplay}`);
     this.promptBanner.setVisible(true);
 
-    // Collect distractors: grab all words from all terms, filter out the target word
+    // Collect distractors: grab all words from candidate terms, filter out the target word
     const allWords = new Set<string>();
-    termPool.forEach(t => t.korean.replace(/[()]/g, '').trim().split(/\s+/).forEach(w => allWords.add(w)));
+    this.allCandidateTerms.forEach(t => t.korean.replace(/[()]/g, '').trim().split(/\s+/).forEach(w => allWords.add(w)));
     allWords.delete(targetWord);
     
     const distractorWords = Array.from(allWords);
@@ -554,6 +573,17 @@ export class PlayScene extends Phaser.Scene {
       this.updateHearts();
       soundFx.playPlayerHurt();
 
+      // In-session Spaced Repetition Reinforcement:
+      // If the player misses an item and still has health remaining,
+      // schedule it to reappear later in the session before the final boss
+      if (this.stats.health > 0 && this.currentEncounterCard && this.questionIndex < this.totalEncounters - 1) {
+        const repeatCard = { ...this.currentEncounterCard };
+        const targetSlot = Math.min(this.totalEncounters - 2, this.questionIndex + 2);
+        if (targetSlot > this.questionIndex - 1 && this.encounterDeck[targetSlot]?.type === repeatCard.type) {
+          this.encounterDeck[targetSlot] = repeatCard;
+        }
+      }
+
       // Enemy attacks
       if (this.currentEnemy) {
         this.currentEnemy.playAttack(() => {
@@ -646,7 +676,8 @@ export class PlayScene extends Phaser.Scene {
       this.scene.start('ResultScene', {
         grade: this.grade,
         stats: this.stats,
-        passed: passed
+        passed: passed,
+        isCumulativeExam: this.isCumulativeExam
       });
     });
   }

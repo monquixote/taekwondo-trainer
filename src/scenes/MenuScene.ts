@@ -145,8 +145,9 @@ export class MenuScene extends Phaser.Scene {
     // 6. Action Buttons
     let isTransitioning = false;
 
-    // Hard Mode state (hoisted)
+    // Hard Mode & Cumulative Exam state (hoisted)
     let isHardMode = localStorage.getItem('tagb_hard_mode') === 'true';
+    let isCumulativeExam = localStorage.getItem('tagb_cumulative_exam') === 'true';
 
     // Start Button Container
     const startContainer = this.add.container(width / 2 - 80, 222);
@@ -215,7 +216,7 @@ export class MenuScene extends Phaser.Scene {
       this.time.delayedCall(50, () => {
         const currentGrade = ALL_GRADES[this.selectedGradeIndex];
         localStorage.setItem('tagb_selected_grade', currentGrade.id);
-        this.scene.start('PlayScene', { grade: currentGrade, isHardMode });
+        this.scene.start('PlayScene', { grade: currentGrade, isHardMode, isCumulativeExam });
       });
     };
 
@@ -266,18 +267,12 @@ export class MenuScene extends Phaser.Scene {
       statsBg.strokeRect(-70, -16, 140, 32);
     });
 
-    // Hard Mode Toggle
-    const hardModeToggle = this.add.text(width / 2, 255, `HARD MODE: ${isHardMode ? 'ON' : 'OFF'}`, {
-      fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
-      color: isHardMode ? '#ff4444' : '#aaaaaa'
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-
-    hardModeToggle.on('pointerdown', () => {
+    // Mode Toggles (Hard Mode & Cumulative Exam)
+    const toggleHardMode = () => {
       isHardMode = !isHardMode;
       localStorage.setItem('tagb_hard_mode', isHardMode.toString());
       hardModeToggle.setText(`HARD MODE: ${isHardMode ? 'ON' : 'OFF'}`);
-      hardModeToggle.setColor(isHardMode ? '#ff4444' : '#aaaaaa');
+      hardModeToggle.setColor(isHardMode ? '#ff4444' : '#888888');
       updateStartButton(false);
       updateTitleTheme();
       if (isHardMode) {
@@ -285,12 +280,38 @@ export class MenuScene extends Phaser.Scene {
       } else {
         soundFx.playSelect();
       }
-    });
+    };
+
+    const toggleCumulativeExam = () => {
+      isCumulativeExam = !isCumulativeExam;
+      localStorage.setItem('tagb_cumulative_exam', isCumulativeExam.toString());
+      examToggle.setText(`EXAM: ${isCumulativeExam ? 'ALL BELTS' : 'THIS BELT'}`);
+      examToggle.setColor(isCumulativeExam ? '#00ffaa' : '#888888');
+      soundFx.playSelect();
+    };
+
+    const hardModeToggle = this.add.text(width / 2 - 105, 255, `HARD MODE: ${isHardMode ? 'ON' : 'OFF'}`, {
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: '7px',
+      color: isHardMode ? '#ff4444' : '#888888'
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    hardModeToggle.on('pointerdown', toggleHardMode);
+
+    const examToggle = this.add.text(width / 2 + 105, 255, `EXAM: ${isCumulativeExam ? 'ALL BELTS' : 'THIS BELT'}`, {
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: '7px',
+      color: isCumulativeExam ? '#00ffaa' : '#888888'
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    examToggle.on('pointerdown', toggleCumulativeExam);
 
     if (this.input.keyboard) {
       this.input.keyboard.on('keydown-SPACE', startGame);
       this.input.keyboard.on('keydown-ENTER', startGame);
       this.input.keyboard.on('keydown-S', viewStats);
+      this.input.keyboard.on('keydown-H', toggleHardMode);
+      this.input.keyboard.on('keydown-C', toggleCumulativeExam);
       this.input.keyboard.on('keydown-LEFT', () => this.changeGrade(-1));
       this.input.keyboard.on('keydown-RIGHT', () => this.changeGrade(1));
     }
