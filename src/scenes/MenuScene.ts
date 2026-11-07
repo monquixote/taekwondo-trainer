@@ -312,13 +312,15 @@ export class MenuScene extends Phaser.Scene {
       this.input.keyboard.on('keydown-S', viewStats);
       this.input.keyboard.on('keydown-H', toggleHardMode);
       this.input.keyboard.on('keydown-C', toggleCumulativeExam);
+      this.input.keyboard.on('keydown-V', () => {
+        soundFx.playSelect();
+        this.scene.start('VoiceConfigScene', { returnTo: 'MenuScene' });
+      });
       this.input.keyboard.on('keydown-LEFT', () => this.changeGrade(-1));
       this.input.keyboard.on('keydown-RIGHT', () => this.changeGrade(1));
     }
 
-
-
-    // 7. Sound Toggle button in top right
+    // 7. Voice Configuration & Sound Toggle buttons in top right
     const soundToggle = this.add.text(width - 15, 12, soundFx.isEnabled() ? '🔊' : '🔇', {
       fontSize: '12px'
     }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
@@ -327,6 +329,19 @@ export class MenuScene extends Phaser.Scene {
       const enabled = soundFx.toggleSound();
       soundToggle.setText(enabled ? '🔊' : '🔇');
     });
+
+    const voiceBtn = this.add.text(width - 44, 12, '⚙️ VOICE', {
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: '7px',
+      color: '#ffe135'
+    }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
+
+    voiceBtn.on('pointerdown', () => {
+      soundFx.playSelect();
+      this.scene.start('VoiceConfigScene', { returnTo: 'MenuScene' });
+    });
+    voiceBtn.on('pointerover', () => voiceBtn.setColor('#ffffff'));
+    voiceBtn.on('pointerout', () => voiceBtn.setColor('#ffe135'));
   }
 
   private changeGrade(direction: number): void {

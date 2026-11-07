@@ -4,6 +4,7 @@ import { MenuScene } from './scenes/MenuScene';
 import { PlayScene } from './scenes/PlayScene';
 import { ResultScene } from './scenes/ResultScene';
 import { StatsScene } from './scenes/StatsScene';
+import { VoiceConfigScene } from './scenes/VoiceConfigScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -26,7 +27,7 @@ const config: Phaser.Types.Core.GameConfig = {
       debug: false
     }
   },
-  scene: [BootScene, MenuScene, PlayScene, ResultScene, StatsScene]
+  scene: [BootScene, MenuScene, PlayScene, ResultScene, StatsScene, VoiceConfigScene]
 };
 
 // Initialize game
