@@ -204,10 +204,9 @@ class SpeechManager {
 
       const { text, isHangul } = this.getPronunciation(term);
       
-      // Martial arts command prosody: An exclamation mark triggers natural
-      // assertive intonation contours instead of flat, trailing sentence cadence.
-      const cadenceText = text.trim() + '!';
-      const utterance = new SpeechSynthesisUtterance(cadenceText);
+      // Strip any punctuation so TTS voices never vocalize "exclamation point" or "period"
+      const cleanText = text.replace(/[!?,.:;()\-]/g, ' ').replace(/\s+/g, ' ').trim();
+      const utterance = new SpeechSynthesisUtterance(cleanText);
 
       if (isHangul && this.koreanVoice) {
         utterance.voice = this.koreanVoice;
