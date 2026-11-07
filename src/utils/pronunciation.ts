@@ -98,6 +98,7 @@ export const HANGUL_MAP: Record<string, PronunciationEntry> = {
 
 class SpeechManager {
   private koreanVoice: SpeechSynthesisVoice | null = null;
+  private englishVoice: SpeechSynthesisVoice | null = null;
 
   constructor() {
     this.initVoices();
@@ -109,10 +110,22 @@ class SpeechManager {
     const load = () => {
       const voices = window.speechSynthesis.getVoices();
       if (voices.length > 0) {
-        // Prioritize native ko-KR voices
-        this.koreanVoice = voices.find(v => v.lang === 'ko-KR' || v.lang === 'ko_KR') ||
-                           voices.find(v => v.lang.startsWith('ko')) ||
-                           null;
+        // Collect Korean voices and prioritize Enhanced / Premium / Natural / Neural voices
+        const koVoices = voices.filter(v => v.lang === 'ko-KR' || v.lang === 'ko_KR' || v.lang.startsWith('ko'));
+        this.koreanVoice =
+          koVoices.find(v => v.name.includes('Premium') || v.name.includes('Enhanced') || v.name.includes('Natural')) ||
+          koVoices.find(v => v.name.includes('Google') || v.name.includes('Siri') || v.name.includes('Yuna')) ||
+          koVoices.find(v => !v.localService) ||
+          koVoices[0] ||
+          null;
+
+        // Best natural English voice for phonetic fallback
+        const enVoices = voices.filter(v => v.lang.startsWith('en'));
+        this.englishVoice =
+          enVoices.find(v => v.name.includes('Premium') || v.name.includes('Enhanced') || v.name.includes('Natural')) ||
+          enVoices.find(v => v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Google')) ||
+          enVoices[0] ||
+          null;
       }
     };
 
@@ -184,17 +197,34 @@ class SpeechManager {
     try {
       window.speechSynthesis.cancel(); // Stop overlapping speech
 
+      // Ensure voices are initialized if they loaded after constructor
+      if (!this.koreanVoice) {
+        this.initVoices();
+      }
+
       const { text, isHangul } = this.getPronunciation(term);
-      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Martial arts command prosody: An exclamation mark triggers natural
+      // assertive intonation contours instead of flat, trailing sentence cadence.
+      const cadenceText = text.trim() + '!';
+      const utterance = new SpeechSynthesisUtterance(cadenceText);
 
       if (isHangul && this.koreanVoice) {
         utterance.voice = this.koreanVoice;
         utterance.lang = 'ko-KR';
-        utterance.rate = 0.88; // Slightly deliberate for clear terminology study
-        utterance.pitch = 1.0;
+        // A crisp rate of 0.98 prevents robotic phoneme-stretching (which happened at 0.88),
+        // while a pitch of 1.08 adds brightness, energy, and inflection.
+        utterance.rate = 0.98;
+        utterance.pitch = 1.08;
+        utterance.volume = 1.0;
       } else {
+        if (this.englishVoice) {
+          utterance.voice = this.englishVoice;
+        }
         utterance.lang = 'en-US';
-        utterance.rate = 0.85;
+        utterance.rate = 0.95;
+        utterance.pitch = 1.05;
+        utterance.volume = 1.0;
       }
 
       window.speechSynthesis.speak(utterance);
