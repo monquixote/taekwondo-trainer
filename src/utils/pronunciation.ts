@@ -384,6 +384,26 @@ class SpeechManager {
   }
 
   /**
+   * User-chosen pitch override (null = automatic behaviour).
+   */
+  public getUserPitch(): number | null {
+    if (typeof window === 'undefined' || !window.localStorage) return null;
+    const raw = localStorage.getItem('tagb_voice_pitch');
+    if (raw === null) return null;
+    const n = parseFloat(raw);
+    return isNaN(n) ? null : n;
+  }
+
+  public setUserPitch(pitch: number | null): void {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    if (pitch === null) {
+      localStorage.removeItem('tagb_voice_pitch');
+    } else {
+      localStorage.setItem('tagb_voice_pitch', pitch.toString());
+    }
+  }
+
+  /**
    * Previews a voice with an authentic martial arts command.
    */
   public testVoice(voiceURI?: string): void {
@@ -409,7 +429,7 @@ class SpeechManager {
       }
 
       const isEnglish = targetVoice ? (targetVoice.lang || '').replace('_', '-').toLowerCase().startsWith('en') : false;
-      const testText = isEnglish ? 'Chon-Ji! Guhn-noon Soh-gee!' : '천지! 걷는 서기!';
+      const testText = isEnglish ? 'Chon Ji. Guhn noon Soh gee.' : '천지 걷는 서기';
 
       const utterance = new SpeechSynthesisUtterance(testText);
       if (targetVoice) {
@@ -420,7 +440,7 @@ class SpeechManager {
       }
 
       utterance.rate = isEnglish ? 0.92 : 0.90;
-      utterance.pitch = 1.0;
+      utterance.pitch = this.getUserPitch() ?? 1.0;
       utterance.volume = 1.0;
 
       window.speechSynthesis.speak(utterance);
@@ -529,14 +549,15 @@ class SpeechManager {
       }
 
       // Delivery settings
+      const userPitch = this.getUserPitch();
       if (isEnglish) {
         utterance.rate = 0.92;
-        utterance.pitch = 1.0;
+        utterance.pitch = userPitch ?? 1.0;
       } else {
         utterance.rate = 0.90;
-        // Pitch: natural (1.0) if an explicit male voice or user-selected voice,
-        // or 0.78 fallback for unconfigured default female voices on Android.
-        utterance.pitch = (this.isExplicitMale || Boolean(preferredURI && preferredURI !== 'auto')) ? 1.0 : 0.78;
+        // Pitch: user override if set, otherwise natural (1.0) if an explicit male voice or
+        // user-selected voice, or 0.78 fallback for unconfigured default voices on Android.
+        utterance.pitch = userPitch ?? ((this.isExplicitMale || Boolean(preferredURI && preferredURI !== 'auto')) ? 1.0 : 0.78);
       }
       utterance.volume = 1.0;
 

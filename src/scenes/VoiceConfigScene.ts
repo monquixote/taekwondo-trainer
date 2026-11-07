@@ -122,6 +122,27 @@ export class VoiceConfigScene extends Phaser.Scene {
       this.changePage(1);
     });
 
+    // 7. Pitch button (cycles Auto / 1.0 / 0.8 / 0.65 / 0.5) next to Back button
+    const pitchSteps: (number | null)[] = [null, 1.0, 0.8, 0.65, 0.5];
+    const pitchLabel = () => {
+      const p = speechManager.getUserPitch();
+      return `PITCH: ${p === null ? 'AUTO' : p.toFixed(2)}`;
+    };
+    const pitchText = this.add.text(width / 2 + 130, 250, pitchLabel(), {
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: '7px',
+      color: '#ffe135'
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    pitchText.on('pointerdown', () => {
+      soundFx.playSelect();
+      const cur = speechManager.getUserPitch();
+      const idx = pitchSteps.findIndex(s => s === cur);
+      const next = pitchSteps[(idx + 1) % pitchSteps.length];
+      speechManager.setUserPitch(next);
+      pitchText.setText(pitchLabel());
+      speechManager.testVoice();
+    });
+
     // 7. Back Button
     const backBtnY = 250;
     const backBtnW = 150;
@@ -314,9 +335,8 @@ export class VoiceConfigScene extends Phaser.Scene {
         } else if (item.gender === 'female') {
           genderBadge = ' [FEMALE]';
         }
-        const langName = item.isKorean ? 'KOREAN (Native Hangul)' : 'ENGLISH (Phonetic)';
         title = `${item.friendlyName.substring(0, 26)}${genderBadge}`;
-        desc = `${item.lang} • ${langName}`;
+        desc = `${item.lang} | ${item.name.substring(0, 34)}`;
       }
 
       const titleText = this.add.text(-cardW / 2 + 30, -5, title, {
