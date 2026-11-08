@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { BootScene } from './scenes/BootScene';
 import { MenuScene } from './scenes/MenuScene';
 import { PlayScene } from './scenes/PlayScene';
+import { RunnerScene } from './scenes/RunnerScene';
 import { ResultScene } from './scenes/ResultScene';
 import { StatsScene } from './scenes/StatsScene';
 import { VoiceConfigScene } from './scenes/VoiceConfigScene';
@@ -27,7 +28,7 @@ const config: Phaser.Types.Core.GameConfig = {
       debug: false
     }
   },
-  scene: [BootScene, MenuScene, PlayScene, ResultScene, StatsScene, VoiceConfigScene]
+  scene: [BootScene, MenuScene, PlayScene, RunnerScene, ResultScene, StatsScene, VoiceConfigScene]
 };
 
 // Initialize game

@@ -170,6 +170,136 @@ export function createPixelArtTextures(scene: Phaser.Scene): void {
       ctx.fillRect(2, 29, 5, 3);
       ctx.fillRect(9, 29, 5, 3);
     });
+
+    // 5. 2.5D Runner Back-View Run Frame 1 (Left stride)
+    createFromGrid(`runner_run1_${gradeId}`, 24, 32, 2, (ctx) => {
+      // Back of head / dark hair
+      ctx.fillStyle = '#14141c';
+      ctx.fillRect(8, 2, 8, 7);
+      ctx.fillStyle = '#f8c090'; // ears
+      ctx.fillRect(7, 5, 1, 2);
+      ctx.fillRect(16, 5, 1, 2);
+
+      // White Dobok Back & shoulders
+      ctx.fillStyle = '#f4f4f8';
+      ctx.fillRect(6, 9, 12, 10);
+      // Dobok back seam & black collar trim
+      ctx.fillStyle = '#222230';
+      ctx.fillRect(8, 9, 8, 1);
+      ctx.fillStyle = '#dcdce6';
+      ctx.fillRect(11, 10, 2, 8);
+
+      // Arms swinging (Left arm forward/up, Right arm back/down)
+      ctx.fillStyle = '#e8e8f0';
+      ctx.fillRect(3, 9, 3, 6);
+      ctx.fillRect(18, 12, 3, 6);
+      ctx.fillStyle = '#f8c090'; // fists
+      ctx.fillRect(3, 7, 3, 2);
+      ctx.fillRect(18, 18, 3, 2);
+
+      // Dynamic Belt wrapped around waist + trailing tails
+      drawBelt(ctx, 6, 18, 12, 3, 14, 20);
+
+      // Pants & Legs running (Left leg extended down, Right leg lifted up)
+      ctx.fillStyle = '#dcdce6';
+      ctx.fillRect(7, 21, 4, 8); // left leg down
+      ctx.fillRect(13, 21, 4, 5); // right leg bent up
+      // Feet / soles
+      ctx.fillStyle = '#f8c090';
+      ctx.fillRect(7, 29, 4, 3);
+      ctx.fillStyle = '#d89868'; // raised sole of right foot
+      ctx.fillRect(13, 25, 4, 3);
+    });
+
+    // 6. 2.5D Runner Back-View Run Frame 2 (Right stride)
+    createFromGrid(`runner_run2_${gradeId}`, 24, 32, 2, (ctx) => {
+      // Back of head / dark hair
+      ctx.fillStyle = '#14141c';
+      ctx.fillRect(8, 3, 8, 7);
+      ctx.fillStyle = '#f8c090';
+      ctx.fillRect(7, 6, 1, 2);
+      ctx.fillRect(16, 6, 1, 2);
+
+      // White Dobok Back
+      ctx.fillStyle = '#f4f4f8';
+      ctx.fillRect(6, 10, 12, 9);
+      ctx.fillStyle = '#222230';
+      ctx.fillRect(8, 10, 8, 1);
+      ctx.fillStyle = '#dcdce6';
+      ctx.fillRect(11, 11, 2, 7);
+
+      // Arms swinging (Left arm back/down, Right arm forward/up)
+      ctx.fillStyle = '#e8e8f0';
+      ctx.fillRect(3, 12, 3, 6);
+      ctx.fillRect(18, 9, 3, 6);
+      ctx.fillStyle = '#f8c090';
+      ctx.fillRect(3, 18, 3, 2);
+      ctx.fillRect(18, 7, 3, 2);
+
+      // Dynamic Belt
+      drawBelt(ctx, 6, 18, 12, 3, 9, 20);
+
+      // Pants & Legs running (Left leg lifted up, Right leg extended down)
+      ctx.fillStyle = '#dcdce6';
+      ctx.fillRect(7, 21, 4, 5); // left leg bent up
+      ctx.fillRect(13, 21, 4, 8); // right leg down
+      // Feet / soles
+      ctx.fillStyle = '#d89868';
+      ctx.fillRect(7, 25, 4, 3);
+      ctx.fillStyle = '#f8c090';
+      ctx.fillRect(13, 29, 4, 3);
+    });
+
+    // 7. 2.5D Runner Flying Kick (Twimyo Chagi / Breaking Strike)
+    createFromGrid(`runner_kick_${gradeId}`, 28, 32, 2, (ctx) => {
+      // Head tilted in airborne kick
+      ctx.fillStyle = '#14141c';
+      ctx.fillRect(8, 2, 8, 6);
+      // Dynamic Torso
+      ctx.fillStyle = '#f8f8f8';
+      ctx.fillRect(7, 8, 11, 9);
+      ctx.fillStyle = '#222230';
+      ctx.fillRect(9, 8, 7, 1);
+
+      // Arms out for balance
+      ctx.fillStyle = '#e8e8f0';
+      ctx.fillRect(2, 9, 5, 4);
+      ctx.fillRect(18, 7, 5, 4);
+      ctx.fillStyle = '#f8c090';
+      ctx.fillRect(1, 9, 2, 3);
+      ctx.fillRect(23, 6, 2, 3);
+
+      // Belt
+      drawBelt(ctx, 7, 16, 11, 3, 5, 18);
+
+      // Left leg tucked, Right leg thrusting forward/up into the board
+      ctx.fillStyle = '#dcdce6';
+      ctx.fillRect(6, 19, 4, 6);
+      ctx.fillRect(13, 12, 6, 7);
+      ctx.fillStyle = '#f8c090';
+      ctx.fillRect(5, 25, 4, 3);
+      // Thrusting foot sole (Footsword / Balkal)
+      ctx.fillRect(18, 9, 5, 5);
+    });
+
+    // 8. 2.5D Runner Recoil / Stumble
+    createFromGrid(`runner_hit_${gradeId}`, 24, 32, 2, (ctx) => {
+      ctx.fillStyle = '#14141c';
+      ctx.fillRect(8, 5, 8, 6);
+      ctx.fillStyle = '#f8f8f8';
+      ctx.fillRect(5, 11, 14, 9);
+      // Arms flung wide in knockback
+      ctx.fillStyle = '#f8c090';
+      ctx.fillRect(1, 8, 4, 4);
+      ctx.fillRect(19, 8, 4, 4);
+      drawBelt(ctx, 6, 19, 12, 3);
+      ctx.fillStyle = '#dcdce6';
+      ctx.fillRect(5, 22, 5, 7);
+      ctx.fillRect(14, 22, 5, 7);
+      ctx.fillStyle = '#f8c090';
+      ctx.fillRect(4, 29, 5, 3);
+      ctx.fillRect(15, 29, 5, 3);
+    });
   };
 
   // Generate textures for each grade

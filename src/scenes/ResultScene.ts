@@ -10,6 +10,7 @@ interface ResultSceneInitData {
   passed: boolean;
   isCumulativeExam?: boolean;
   roundMistakes?: RoundMistake[];
+  returnScene?: string;
 }
 
 export class ResultScene extends Phaser.Scene {
@@ -18,6 +19,7 @@ export class ResultScene extends Phaser.Scene {
   private passed!: boolean;
   private isCumulativeExam: boolean = false;
   private roundMistakes: RoundMistake[] = [];
+  private returnScene: string = 'PlayScene';
 
   constructor() {
     super('ResultScene');
@@ -31,6 +33,7 @@ export class ResultScene extends Phaser.Scene {
       ? data.isCumulativeExam
       : localStorage.getItem('tagb_cumulative_exam') === 'true';
     this.roundMistakes = data.roundMistakes || [];
+    this.returnScene = data.returnScene || (localStorage.getItem('tagb_game_mode') === 'runner' ? 'RunnerScene' : 'PlayScene');
   }
 
   create(): void {
@@ -200,7 +203,7 @@ export class ResultScene extends Phaser.Scene {
       speechManager.stop();
       soundFx.playSelect();
       this.time.delayedCall(50, () => {
-        this.scene.start('PlayScene', {
+        this.scene.start(this.returnScene, {
           grade: this.grade,
           isCumulativeExam: this.isCumulativeExam
         });
@@ -213,7 +216,7 @@ export class ResultScene extends Phaser.Scene {
       speechManager.stop();
       soundFx.playSelect();
       this.time.delayedCall(50, () => {
-        this.scene.start('PlayScene', {
+        this.scene.start(this.returnScene, {
           grade: this.grade,
           isCumulativeExam: this.isCumulativeExam,
           retryMistakes: this.roundMistakes
