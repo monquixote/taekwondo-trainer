@@ -20,8 +20,14 @@ interface BoardTarget {
   broken: boolean;
   highlightedWrong?: boolean;
   highlightedCorrect?: boolean;
-  labelObj: Phaser.GameObjects.Text;
   badgeObj: Phaser.GameObjects.Text;
+}
+
+interface GantrySign {
+  container: Phaser.GameObjects.Container;
+  bg: Phaser.GameObjects.Graphics;
+  badgeText: Phaser.GameObjects.Text;
+  optionText: Phaser.GameObjects.Text;
 }
 
 interface WoodSplinter {
@@ -38,10 +44,15 @@ interface WoodSplinter {
 }
 
 const LANE_WORLD_X = [-130, 0, 130];
-const FOCAL_LENGTH = 260;
-const HORIZON_Y = 86;
-const GROUND_NEAR_Y = 242;
-const SPAWN_Z = 960;
+const GANTRY_SCREEN_X = [86, 240, 394];
+const GANTRY_Y = 82;
+const GANTRY_W = 146;
+const GANTRY_H = 44;
+
+const FOCAL_LENGTH = 250;
+const HORIZON_Y = 106;
+const GROUND_NEAR_Y = 244;
+const SPAWN_Z = 920;
 const STRIKE_Z = 24;
 
 export class RunnerScene extends Phaser.Scene {
@@ -68,13 +79,14 @@ export class RunnerScene extends Phaser.Scene {
   private playerWorldY: number = 0;
   private scrollZ: number = 0;
   private waveZ: number = SPAWN_Z;
-  private baseSpeed: number = 340; // Z units per second
+  private baseSpeed: number = 310; // Z units per second
   private isDashing: boolean = false;
   private isProcessingImpact: boolean = false;
   private isTransitioning: boolean = false;
   private runAnimTimer: number = 0;
   private runFrame: number = 1;
   private playerPose: 'run' | 'kick' | 'hit' = 'run';
+  private waveSpawnTimestamp: number = 0;
 
   // Scene Objects
   private corridorGraphics!: Phaser.GameObjects.Graphics;
@@ -82,6 +94,7 @@ export class RunnerScene extends Phaser.Scene {
   private particlesGraphics!: Phaser.GameObjects.Graphics;
   private playerSprite!: Phaser.GameObjects.Image;
   private boardTargets: BoardTarget[] = [];
+  private gantrySigns: GantrySign[] = [];
   private splinters: WoodSplinter[] = [];
   private pillarZPositions: number[] = [];
 
@@ -96,7 +109,8 @@ export class RunnerScene extends Phaser.Scene {
   private promptAudioBtn!: Phaser.GameObjects.Text;
   private feedbackText!: Phaser.GameObjects.Text;
 
-  // Touch swipe tracking
+  // Touch swipe tracking (guarded against stray pointerup from previous scene)
+  private hasActivePointerDown: boolean = false;
   private pointerDownX: number = 0;
   private pointerDownY: number = 0;
 
@@ -127,9 +141,11 @@ export class RunnerScene extends Phaser.Scene {
     this.isDashing = false;
     this.isProcessingImpact = false;
     this.isTransitioning = false;
+    this.hasActivePointerDown = false;
     this.playerPose = 'run';
     this.hearts = [];
     this.boardTargets = [];
+    this.gantrySigns = [];
     this.splinters = [];
     this.roundMistakes = [];
     this.currentSpokenKorean = null;
@@ -181,11 +197,12 @@ export class RunnerScene extends Phaser.Scene {
     this.playerSprite.setScale(1.25);
     this.playerSprite.setDepth(10);
 
-    // 3. Top HUD & Question Banner
+    // 3. Top HUD, Question Banner & Overhead Highway Gantry Signs
     this.createHUD();
+    this.createGantrySigns();
 
     // 4. Floating Feedback Text
-    this.feedbackText = this.add.text(width / 2, 132, '', {
+    this.feedbackText = this.add.text(width / 2, 148, '', {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '9px',
       color: '#00ff88',
@@ -197,13 +214,13 @@ export class RunnerScene extends Phaser.Scene {
 
     // 5. Bottom Controls Hint Bar
     const hintBg = this.add.graphics().setDepth(20);
-    hintBg.fillStyle(0x060810, 0.82);
-    hintBg.fillRect(0, height - 16, width, 16);
+    hintBg.fillStyle(0x060810, 0.85);
+    hintBg.fillRect(0, height - 15, width, 15);
 
     this.add.text(
       width / 2,
-      height - 8,
-      '◀/▶ OR TAP LANE: MOVE   |   ▲/SPACE OR DOUBLE-TAP: FLYING KICK DASH!',
+      height - 7.5,
+      '◀/▶ OR TAP SIGN: SELECT LANE  |  ▲/SPACE OR TAP AGAIN: FLYING KICK!',
       {
         fontFamily: "'Press Start 2P', monospace",
         fontSize: '6px',
@@ -221,40 +238,40 @@ export class RunnerScene extends Phaser.Scene {
   private createHUD(): void {
     const { width } = this.scale;
 
-    // Top bar dark backing
+    // Top bar dark backing (Y = 0..20)
     const topBar = this.add.graphics().setDepth(20);
-    topBar.fillStyle(0x090a12, 0.92);
-    topBar.fillRect(0, 0, width, 24);
+    topBar.fillStyle(0x090a12, 0.95);
+    topBar.fillRect(0, 0, width, 20);
     topBar.lineStyle(1, this.isHardMode ? 0xff3333 : 0x334477, 1);
-    topBar.lineBetween(0, 24, width, 24);
+    topBar.lineBetween(0, 20, width, 20);
 
     // Hearts (Health)
     for (let i = 0; i < this.stats.maxHealth; i++) {
-      const heart = this.add.image(14 + i * 18, 12, 'heart_full').setDepth(21);
+      const heart = this.add.image(13 + i * 16, 10, 'heart_full').setScale(0.9).setDepth(21);
       this.hearts.push(heart);
     }
 
     // Score, Streak, Progress
-    this.scoreText = this.add.text(105, 8, `SCORE:${this.stats.score}`, {
+    this.scoreText = this.add.text(98, 6, `SCORE:${this.stats.score}`, {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '7px',
       color: '#ffffff'
     }).setDepth(21);
 
-    this.streakText = this.add.text(200, 8, `STREAK:${this.stats.currentStreak}`, {
+    this.streakText = this.add.text(196, 6, `STREAK:${this.stats.currentStreak}`, {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '7px',
       color: '#ffe135'
     }).setDepth(21);
 
-    this.progressText = this.add.text(295, 8, `WAVE:1/${this.totalEncounters}`, {
+    this.progressText = this.add.text(292, 6, `WAVE:1/${this.totalEncounters}`, {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '7px',
       color: '#00ffaa'
     }).setDepth(21);
 
     // Sound & Menu exit buttons
-    const soundBtn = this.add.text(width - 72, 6, soundFx.isEnabled() ? '🔊' : '🔇', {
+    const soundBtn = this.add.text(width - 72, 4, soundFx.isEnabled() ? '🔊' : '🔇', {
       fontSize: '10px'
     }).setDepth(21).setInteractive({ useHandCursor: true });
 
@@ -264,7 +281,7 @@ export class RunnerScene extends Phaser.Scene {
       soundBtn.setText(enabled ? '🔊' : '🔇');
     });
 
-    const menuBtn = this.add.text(width - 10, 8, '✕ MENU', {
+    const menuBtn = this.add.text(width - 10, 6, '✕ MENU', {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '7px',
       color: '#ff7777'
@@ -279,18 +296,18 @@ export class RunnerScene extends Phaser.Scene {
       this.scene.start('MenuScene', { gradeId: this.grade.id });
     });
 
-    // Question Prompt Banner at top of horizon (Y = 26..80)
-    this.promptBanner = this.add.container(width / 2, 53).setDepth(20);
+    // Question Prompt Banner (Y = 22..56, centerY = 39)
+    this.promptBanner = this.add.container(width / 2, 39).setDepth(20);
     const bannerW = 456;
-    const bannerH = 50;
+    const bannerH = 34;
 
     const bannerBg = this.add.graphics();
-    bannerBg.fillStyle(0x0b0e1d, 0.94);
+    bannerBg.fillStyle(0x0b0e1d, 0.96);
     bannerBg.fillRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 4);
     bannerBg.lineStyle(1.5, this.isHardMode ? 0xff4444 : 0xffe135, 1);
     bannerBg.strokeRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 4);
 
-    this.categoryBadgeText = this.add.text(0, -15, 'KYOKPA 3D RUNNER', {
+    this.categoryBadgeText = this.add.text(0, -10, 'KYOKPA 3D RUNNER', {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '6px',
       color: '#ffe135'
@@ -298,14 +315,14 @@ export class RunnerScene extends Phaser.Scene {
 
     this.promptText = this.add.text(0, 5, '', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '8px',
+      fontSize: '7px',
       color: '#ffffff',
       align: 'center',
-      wordWrap: { width: bannerW - 50 }
+      wordWrap: { width: bannerW - 48 }
     }).setOrigin(0.5);
 
-    this.promptAudioBtn = this.add.text(bannerW / 2 - 18, 0, '🔊', {
-      fontSize: '13px'
+    this.promptAudioBtn = this.add.text(bannerW / 2 - 16, 0, '🔊', {
+      fontSize: '12px'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     this.promptAudioBtn.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
@@ -316,6 +333,99 @@ export class RunnerScene extends Phaser.Scene {
     });
 
     this.promptBanner.add([bannerBg, this.categoryBadgeText, this.promptText, this.promptAudioBtn]);
+  }
+
+  /**
+   * Creates the 3 Fixed-Scale "Highway Gantry" Lane Signs directly below the question banner.
+   * These display the 3 lane answers at 100% full resolution from the instant a wave spawns.
+   */
+  private createGantrySigns(): void {
+    const laneTitles = ['◀ LANE [1]', '▲ LANE [2]', 'LANE [3] ▶'];
+
+    for (let lane = 0; lane < 3; lane++) {
+      const x = GANTRY_SCREEN_X[lane];
+      const container = this.add.container(x, GANTRY_Y).setDepth(20);
+
+      const bg = this.add.graphics();
+      const badgeText = this.add.text(0, -14, laneTitles[lane], {
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: '6px',
+        color: '#ffe135'
+      }).setOrigin(0.5);
+
+      const optionText = this.add.text(0, 4, '', {
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: '7px',
+        color: '#ffffff',
+        align: 'center',
+        wordWrap: { width: GANTRY_W - 12 }
+      }).setOrigin(0.5);
+
+      container.add([bg, badgeText, optionText]);
+
+      this.gantrySigns.push({
+        container,
+        bg,
+        badgeText,
+        optionText
+      });
+    }
+
+    this.updateGantryVisuals();
+  }
+
+  /**
+   * Redraws the 3 overhead gantry signboards to reflect the active lane and impact state.
+   */
+  private updateGantryVisuals(): void {
+    for (let lane = 0; lane < 3; lane++) {
+      const sign = this.gantrySigns[lane];
+      if (!sign) continue;
+
+      const board = this.boardTargets[lane];
+      const isSelected = this.currentLane === lane;
+
+      sign.bg.clear();
+
+      // Overhead gantry support struts connecting to top banner
+      sign.bg.lineStyle(2, 0x445577, 0.9);
+      sign.bg.lineBetween(-GANTRY_W * 0.35, -GANTRY_H / 2 - 4, -GANTRY_W * 0.35, -GANTRY_H / 2);
+      sign.bg.lineBetween(GANTRY_W * 0.35, -GANTRY_H / 2 - 4, GANTRY_W * 0.35, -GANTRY_H / 2);
+
+      let fillColor = 0x101528;
+      let borderColor = 0x3b486b;
+      let borderAlpha = 0.9;
+      let badgeColor = '#8899bb';
+      let textColor = '#dde6ff';
+
+      if (board?.highlightedCorrect || (board?.broken && board?.isCorrect)) {
+        fillColor = 0x0c3b24;
+        borderColor = 0x00ff88;
+        borderAlpha = 1;
+        badgeColor = '#00ff88';
+        textColor = '#ffffff';
+      } else if (board?.highlightedWrong) {
+        fillColor = 0x441118;
+        borderColor = 0xff3344;
+        borderAlpha = 1;
+        badgeColor = '#ff6666';
+        textColor = '#ffcccc';
+      } else if (isSelected) {
+        fillColor = 0x172446;
+        borderColor = 0xffe135;
+        borderAlpha = 1;
+        badgeColor = '#ffe135';
+        textColor = '#ffffff';
+      }
+
+      sign.bg.fillStyle(fillColor, 0.95);
+      sign.bg.fillRoundedRect(-GANTRY_W / 2, -GANTRY_H / 2, GANTRY_W, GANTRY_H, 4);
+      sign.bg.lineStyle(isSelected ? 2 : 1, borderColor, borderAlpha);
+      sign.bg.strokeRoundedRect(-GANTRY_W / 2, -GANTRY_H / 2, GANTRY_W, GANTRY_H, 4);
+
+      sign.badgeText.setColor(badgeColor);
+      sign.optionText.setColor(textColor);
+    }
   }
 
   private setupControls(): void {
@@ -335,15 +445,20 @@ export class RunnerScene extends Phaser.Scene {
       this.input.keyboard.on('keydown-ENTER', () => this.triggerDashKick());
     }
 
-    // Pointer / Touch support: swipe left/right OR tap directly on left/center/right lane
+    // Pointer / Touch support: requires a fresh pointerdown inside this scene/wave
+    // so releasing the mouse from clicking "START RUNNER" never triggers an accidental jump!
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.y < 80) return; // Ignore HUD clicks
+      if (pointer.y < 56 || this.isProcessingImpact || this.isTransitioning) return;
+      this.hasActivePointerDown = true;
       this.pointerDownX = pointer.x;
       this.pointerDownY = pointer.y;
     });
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.y < 80 || this.isProcessingImpact || this.isTransitioning) return;
+      if (!this.hasActivePointerDown) return;
+      this.hasActivePointerDown = false;
+
+      if (pointer.y < 56 || this.isProcessingImpact || this.isTransitioning) return;
 
       const dx = pointer.x - this.pointerDownX;
       const dy = pointer.y - this.pointerDownY;
@@ -359,12 +474,12 @@ export class RunnerScene extends Phaser.Scene {
         return;
       }
 
-      // Direct tap on screen: determine which of the 3 perspective lanes was tapped
+      // Direct tap on screen or Overhead Gantry Sign: determine which of the 3 lanes was tapped
       const { width } = this.scale;
       let tappedLane = 1;
-      if (pointer.x < width * 0.36) {
+      if (pointer.x < width * 0.34) {
         tappedLane = 0;
-      } else if (pointer.x > width * 0.64) {
+      } else if (pointer.x > width * 0.66) {
         tappedLane = 2;
       } else {
         tappedLane = 1;
@@ -380,6 +495,7 @@ export class RunnerScene extends Phaser.Scene {
     if (nextLane !== this.currentLane) {
       this.currentLane = nextLane;
       soundFx.playSelect();
+      this.updateGantryVisuals();
     }
   }
 
@@ -391,11 +507,15 @@ export class RunnerScene extends Phaser.Scene {
     } else {
       this.currentLane = lane;
       soundFx.playSelect();
+      this.updateGantryVisuals();
     }
   }
 
   private triggerDashKick(): void {
     if (this.isProcessingImpact || this.isTransitioning || this.isDashing) return;
+    // Brief grace window after wave spawn so carry-over keypresses don't auto-dash immediately
+    if (this.time.now - this.waveSpawnTimestamp < 320) return;
+
     this.isDashing = true;
     this.playerPose = 'kick';
     this.playerSprite.setTexture(`runner_kick_${this.grade.id}`);
@@ -403,9 +523,7 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   private spawnNextWave(): void {
-    // Clean up previous wave labels
     for (const b of this.boardTargets) {
-      b.labelObj.destroy();
       b.badgeObj.destroy();
     }
     this.boardTargets = [];
@@ -417,9 +535,11 @@ export class RunnerScene extends Phaser.Scene {
 
     this.isProcessingImpact = false;
     this.isDashing = false;
+    this.hasActivePointerDown = false;
     this.playerPose = 'run';
     this.playerWorldY = 0;
     this.waveZ = SPAWN_Z;
+    this.waveSpawnTimestamp = this.time.now;
 
     this.progressText.setText(`WAVE:${this.questionIndex + 1}/${this.totalEncounters}`);
 
@@ -491,7 +611,7 @@ export class RunnerScene extends Phaser.Scene {
 
     this.categoryBadgeText.setText(badgeStr);
     this.promptText.setText(promptStr);
-    this.promptText.setFontSize(promptStr.length > 58 ? '7px' : '8px');
+    this.promptText.setFontSize(promptStr.length > 62 ? '6px' : '7px');
 
     // Assign the 3 options across Lanes 0, 1, 2
     const laneOptions = Phaser.Utils.Array.Shuffle([
@@ -503,20 +623,24 @@ export class RunnerScene extends Phaser.Scene {
     for (let lane = 0; lane < 3; lane++) {
       const opt = laneOptions[lane];
 
-      const badgeObj = this.add.text(0, 0, `[${lane + 1}]`, {
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
-        color: '#ffe135',
-        stroke: '#000000',
-        strokeThickness: 2
-      }).setOrigin(0.5).setDepth(7);
+      // 1. Populate the Fixed-Scale Overhead Gantry Sign for this lane (100% readable immediately!)
+      const sign = this.gantrySigns[lane];
+      if (sign) {
+        let displayOpt = opt.text;
+        if (displayOpt.length > 52) {
+          displayOpt = displayOpt.substring(0, 50) + '..';
+        }
+        sign.optionText.setText(displayOpt);
+        sign.optionText.setFontSize(displayOpt.length > 26 ? '6px' : '7px');
+      }
 
-      const labelObj = this.add.text(0, 0, opt.text, {
+      // 2. Create bold [1] / [2] / [3] emblem on the 3D pine board itself
+      const badgeObj = this.add.text(0, 0, `${lane + 1}`, {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
-        color: '#1a0d00',
-        align: 'center',
-        wordWrap: { width: 112 }
+        fontSize: '12px',
+        color: '#4a2511',
+        stroke: '#f5deb3',
+        strokeThickness: 2
       }).setOrigin(0.5).setDepth(7);
 
       this.boardTargets.push({
@@ -524,10 +648,11 @@ export class RunnerScene extends Phaser.Scene {
         text: opt.text,
         isCorrect: opt.isCorrect,
         broken: false,
-        labelObj,
         badgeObj
       });
     }
+
+    this.updateGantryVisuals();
   }
 
   /**
@@ -539,7 +664,6 @@ export class RunnerScene extends Phaser.Scene {
     scale: number;
   } {
     const { width } = this.scale;
-    // Subtle camera parallax shift opposite to player X
     const vanishingX = width / 2 - this.playerWorldX * 0.12;
     const clampedZ = Math.max(-180, z);
     const scale = FOCAL_LENGTH / (FOCAL_LENGTH + clampedZ);
@@ -557,7 +681,7 @@ export class RunnerScene extends Phaser.Scene {
     this.playerWorldX = Phaser.Math.Linear(this.playerWorldX, targetX, Math.min(1, dt * 14));
 
     // 2. Determine forward running speed
-    const streakBonus = Math.min(this.stats.currentStreak * 15, 120);
+    const streakBonus = Math.min(this.stats.currentStreak * 15, 110);
     let currentSpeed = this.baseSpeed + streakBonus;
 
     if (this.isHardMode) {
@@ -569,8 +693,8 @@ export class RunnerScene extends Phaser.Scene {
       currentSpeed = 1250;
       this.playerWorldY = Phaser.Math.Linear(this.playerWorldY, 18, Math.min(1, dt * 15));
     } else if (!this.isHardMode && !this.isProcessingImpact && this.waveZ < 340 && this.waveZ > STRIKE_Z) {
-      // Focus Zone in Normal Mode: gently slow down near the player so longer text is easy to read
-      const focusFactor = Phaser.Math.Clamp((this.waveZ - STRIKE_Z) / 316, 0.28, 1);
+      // Focus Zone in Normal Mode: gently slow down near the player so longer text is stress-free
+      const focusFactor = Phaser.Math.Clamp((this.waveZ - STRIKE_Z) / 316, 0.32, 1);
       currentSpeed *= focusFactor;
     }
 
@@ -632,7 +756,6 @@ export class RunnerScene extends Phaser.Scene {
     if (isCorrect && chosenBoard) {
       // SUCCESS: Smash the wooden pine board!
       chosenBoard.broken = true;
-      chosenBoard.labelObj.setVisible(false);
       chosenBoard.badgeObj.setVisible(false);
 
       this.playerPose = 'kick';
@@ -662,6 +785,7 @@ export class RunnerScene extends Phaser.Scene {
 
       this.scoreText.setText(`SCORE:${this.stats.score}`);
       this.streakText.setText(`STREAK:${this.stats.currentStreak}`);
+      this.updateGantryVisuals();
 
       this.showFeedback(
         wasDashing ? `⚡ FLYING KICK SMASH! +${points}` : `🥋 KYOKPA BREAK! +${points}`,
@@ -689,6 +813,7 @@ export class RunnerScene extends Phaser.Scene {
       if (rightBoard) {
         rightBoard.highlightedCorrect = true;
       }
+      this.updateGantryVisuals();
 
       // Log mistake for ResultScene review & Retry Missed mode
       const correctAns = rightBoard ? rightBoard.text : '';
@@ -770,9 +895,9 @@ export class RunnerScene extends Phaser.Scene {
     g.fillStyle(this.isHardMode ? 0x1a060a : 0x0b1022, 1);
     g.fillRect(0, 0, width, HORIZON_Y);
 
-    // Subtle horizon glow
+    // Subtle horizon glow underneath the gantry signs
     g.fillStyle(this.isHardMode ? 0x440a14 : 0x1a264d, 0.8);
-    g.fillRect(0, HORIZON_Y - 10, width, 10);
+    g.fillRect(0, HORIZON_Y - 6, width, 6);
 
     // 2. Floor Base Trapezoid
     const floorBaseColor = this.isHardMode ? 0x261015 : 0x2c1b10;
@@ -810,7 +935,7 @@ export class RunnerScene extends Phaser.Scene {
     const laneNearL = this.project3D(activeLeftX, 0, -40);
     const laneNearR = this.project3D(activeRightX, 0, -40);
 
-    g.fillStyle(this.isHardMode ? 0xff4444 : 0xffe135, 0.14);
+    g.fillStyle(this.isHardMode ? 0xff4444 : 0xffe135, 0.16);
     g.beginPath();
     g.moveTo(laneFarL.screenX, laneFarL.screenY);
     g.lineTo(laneFarR.screenX, laneFarR.screenY);
@@ -836,7 +961,7 @@ export class RunnerScene extends Phaser.Scene {
       if (pz < -40 || pz > 1020) continue;
       for (const side of [-1, 1]) {
         const baseProj = this.project3D(side * 215, 0, pz);
-        const topProj = this.project3D(side * 215, 115, pz);
+        const topProj = this.project3D(side * 215, 100, pz);
         const pillarW = Math.max(2, 16 * baseProj.scale);
         const pillarH = Math.max(4, baseProj.screenY - topProj.screenY);
 
@@ -845,7 +970,7 @@ export class RunnerScene extends Phaser.Scene {
         g.fillRect(baseProj.screenX - pillarW / 2, topProj.screenY, pillarW, pillarH);
 
         // Golden lantern / band near top of pillar
-        const lanternH = Math.max(2, 10 * baseProj.scale);
+        const lanternH = Math.max(2, 9 * baseProj.scale);
         g.fillStyle(this.isHardMode ? 0xff3333 : 0xffaa22, 0.85);
         g.fillRect(baseProj.screenX - pillarW * 0.6, topProj.screenY + pillarH * 0.18, pillarW * 1.2, lanternH);
       }
@@ -858,8 +983,8 @@ export class RunnerScene extends Phaser.Scene {
 
     if (this.boardTargets.length === 0) return;
 
-    const boardWorldW = 114;
-    const boardWorldH = 68;
+    const boardWorldW = 112;
+    const boardWorldH = 62;
 
     for (const board of this.boardTargets) {
       if (board.broken) continue;
@@ -869,7 +994,7 @@ export class RunnerScene extends Phaser.Scene {
       const topProj = this.project3D(laneCenterX, boardWorldH, this.waveZ);
 
       const screenW = boardWorldW * baseProj.scale;
-      const screenH = Math.max(12, baseProj.screenY - topProj.screenY);
+      const screenH = Math.max(10, baseProj.screenY - topProj.screenY);
       const leftX = baseProj.screenX - screenW / 2;
       const topY = topProj.screenY;
 
@@ -879,7 +1004,7 @@ export class RunnerScene extends Phaser.Scene {
 
       // 2. Cinder-block Holder Posts at Left/Right bottom corners
       const postW = Math.max(2, 10 * baseProj.scale);
-      const postH = Math.max(3, 14 * baseProj.scale);
+      const postH = Math.max(3, 13 * baseProj.scale);
       g.fillStyle(0x555566, 1);
       g.fillRect(leftX, baseProj.screenY - postH, postW, postH);
       g.fillRect(leftX + screenW - postW, baseProj.screenY - postH, postW, postH);
@@ -887,9 +1012,7 @@ export class RunnerScene extends Phaser.Scene {
       // 3. 3D Extruded Side & Top Bevel (Pine Wood Thickness)
       const depthExtrude = Math.max(2, 6 * baseProj.scale);
       g.fillStyle(0x8b5a2b, 1);
-      // Top bevel
       g.fillRect(leftX + depthExtrude * 0.5, topY - depthExtrude, screenW, depthExtrude);
-      // Right 3D side bevel
       g.fillRect(leftX + screenW, topY - depthExtrude, depthExtrude, screenH);
 
       // 4. Main Pine Board Face
@@ -903,29 +1026,29 @@ export class RunnerScene extends Phaser.Scene {
         faceColor = 0xff7777;
         borderColor = 0xff0000;
       } else if (board.lane === this.currentLane) {
-        // Subtle warm highlight on the board in the player's targeted lane
         faceColor = 0xf7dca8;
         borderColor = 0xffe135;
       }
 
+      const boardFaceH = screenH - postH * 0.4;
       g.fillStyle(faceColor, 1);
-      g.fillRect(leftX, topY, screenW, screenH - postH * 0.4);
+      g.fillRect(leftX, topY, screenW, boardFaceH);
 
       g.lineStyle(Math.max(1, 2 * baseProj.scale), borderColor, 1);
-      g.strokeRect(leftX, topY, screenW, screenH - postH * 0.4);
+      g.strokeRect(leftX, topY, screenW, boardFaceH);
 
-      // Subtle horizontal wood grain line
-      g.lineStyle(1, 0xc89d66, 0.45);
-      g.lineBetween(leftX + 3, topY + screenH * 0.42, leftX + screenW - 3, topY + screenH * 0.42);
+      // Target bullseye circle in center of pine board
+      const centerY = topY + boardFaceH * 0.5;
+      const circleR = Math.max(4, 15 * baseProj.scale);
+      g.fillStyle(board.lane === this.currentLane ? 0xffe135 : 0xd2a66c, 0.85);
+      g.fillCircle(baseProj.screenX, centerY, circleR);
+      g.lineStyle(Math.max(1, 1.5 * baseProj.scale), 0x704214, 0.9);
+      g.strokeCircle(baseProj.screenX, centerY, circleR);
 
-      // 5. Update Badge [1]/[2]/[3] and Text Label
-      const textScale = Phaser.Math.Clamp(baseProj.scale * 1.18, 0.35, 1.08);
-      board.badgeObj.setPosition(baseProj.screenX, topY - Math.max(6, 9 * baseProj.scale));
-      board.badgeObj.setScale(textScale);
-      board.badgeObj.setColor(board.lane === this.currentLane ? '#00ff88' : '#ffe135');
-
-      board.labelObj.setPosition(baseProj.screenX, topY + (screenH - postH * 0.4) * 0.5);
-      board.labelObj.setScale(textScale);
+      // 5. Update Board Number Emblem (1 / 2 / 3)
+      const badgeScale = Phaser.Math.Clamp(baseProj.scale * 1.15, 0.35, 1.1);
+      board.badgeObj.setPosition(baseProj.screenX, centerY);
+      board.badgeObj.setScale(badgeScale);
     }
   }
 
@@ -933,12 +1056,12 @@ export class RunnerScene extends Phaser.Scene {
     this.feedbackText.setText(msg);
     this.feedbackText.setColor(color);
     this.feedbackText.setAlpha(1);
-    this.feedbackText.setY(134);
+    this.feedbackText.setY(148);
 
     this.tweens.killTweensOf(this.feedbackText);
     this.tweens.add({
       targets: this.feedbackText,
-      y: 118,
+      y: 130,
       alpha: 0,
       duration: 1150,
       ease: 'Cubic.easeOut'
