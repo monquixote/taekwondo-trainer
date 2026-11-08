@@ -163,7 +163,7 @@ export class ResultScene extends Phaser.Scene {
             fontSize: '22px'
           }).setOrigin(0.5, 0.5).setInteractive({ useHandCursor: true });
 
-          speaker.on('pointerdown', () => {
+          speaker.on('pointerup', () => {
             speechManager.speakKorean(koreanTerm);
             this.tweens.add({
               targets: speaker,

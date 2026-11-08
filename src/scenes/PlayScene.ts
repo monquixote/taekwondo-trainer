@@ -280,7 +280,7 @@ export class PlayScene extends Phaser.Scene {
     this.promptAudioBtn = this.add.text(bannerW / 2 - 36, 0, '🔊', {
       fontSize: '24px'
     }).setOrigin(0.5, 0.5).setInteractive({ useHandCursor: true });
-    this.promptAudioBtn.on('pointerdown', () => this.speakCurrentPrompt());
+    this.promptAudioBtn.on('pointerup', () => this.speakCurrentPrompt());
     this.promptAudioBtn.on('pointerover', () => this.promptAudioBtn.setScale(1.2));
     this.promptAudioBtn.on('pointerout', () => this.promptAudioBtn.setScale(1.0));
     this.promptAudioBtn.setVisible(false);

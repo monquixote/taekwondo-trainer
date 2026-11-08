@@ -26,6 +26,14 @@ class SoundEffectsManager {
     return this.enabled;
   }
 
+  public primeAudio(): void {
+    if (typeof window === 'undefined') return;
+    const ctx = this.getContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+  }
+
   public playSelect(): void {
     if (!this.enabled) return;
     const ctx = this.getContext();

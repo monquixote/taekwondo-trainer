@@ -48,12 +48,24 @@ export class VoiceConfigScene extends Phaser.Scene {
       strokeThickness: 5
     }).setOrigin(0.5);
 
-    this.activeVoiceText = this.add.text(width / 2, 62, `ACTIVE: ${speechManager.getActiveVoiceLabel()}`, {
+    this.activeVoiceText = this.add.text(width / 2, 58, `ACTIVE: ${speechManager.getActiveVoiceLabel()}`, {
       fontFamily: "'Fredoka', 'Press Start 2P', sans-serif",
       fontSize: '15px',
       fontStyle: 'bold',
       color: '#00ffaa'
     }).setOrigin(0.5);
+
+    const statusText = this.add.text(width / 2, 78, `STATUS: ${speechManager.speechStatusText}`, {
+      fontFamily: "'Fredoka', sans-serif",
+      fontSize: '13px',
+      color: '#e2e8f0'
+    }).setOrigin(0.5);
+
+    speechManager.onStatusChange = (status: string) => {
+      if (statusText && statusText.active) {
+        statusText.setText(`STATUS: ${status}`);
+      }
+    };
 
     // 3. Sound Toggle (Top Right)
     const soundToggle = this.add.text(width - 30, 20, soundFx.isEnabled() ? '🔊' : '🔇', {
@@ -403,9 +415,9 @@ export class VoiceConfigScene extends Phaser.Scene {
       }).setOrigin(0.5);
 
       const testZone = this.add.zone(testBtnX, 0, testBtnW, testBtnH).setInteractive({ useHandCursor: true });
-      testZone.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      testZone.on('pointerup', (pointer: Phaser.Input.Pointer) => {
         // Stop event from propagating to card click
-        pointer.event.stopPropagation();
+        pointer.event?.stopPropagation?.();
         speechManager.testVoice(voiceURI || undefined);
         this.tweens.add({
           targets: testText,
@@ -418,8 +430,7 @@ export class VoiceConfigScene extends Phaser.Scene {
 
       // Card selection zone
       const cardZone = this.add.zone(-testBtnW / 2, 0, cardW - testBtnW - 10, cardH).setInteractive({ useHandCursor: true });
-      cardZone.on('pointerdown', () => {
-        soundFx.playSelect();
+      cardZone.on('pointerup', () => {
         if (isAuto) {
           speechManager.setSelectedVoiceURI(null);
         } else {

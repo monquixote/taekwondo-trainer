@@ -278,6 +278,31 @@ class SpeechManager {
   private koreanMaleVoice: SpeechSynthesisVoice | null = null;
   private isExplicitMale: boolean = false;
   private selectedVoiceURI: string | null = null;
+  private activeUtterance: SpeechSynthesisUtterance | null = null;
+  public speechStatusText: string = 'Ready';
+  public onStatusChange?: (status: string) => void;
+
+  private setStatus(msg: string): void {
+    this.speechStatusText = msg;
+    if (this.onStatusChange) {
+      try {
+        this.onStatusChange(msg);
+      } catch (err) {
+        // ignore
+      }
+    }
+  }
+
+  public primeSpeech(): void {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
 
   constructor() {
     if (typeof window !== 'undefined' && window.localStorage) {
@@ -518,7 +543,8 @@ class SpeechManager {
       }
 
       const isEnglish = targetVoice ? (targetVoice.lang || '').replace('_', '-').toLowerCase().startsWith('en') : false;
-      const testText = isEnglish ? 'Chon Ji. Guhn noon Soh gee.' : '천지 걷는 서기';
+      // Strip punctuation to avoid silent failures on iOS 17/18 WebKit
+      const testText = isEnglish ? 'Chon Ji Guhn noon Soh gee' : '천지 걷는 서기';
 
       const utterance = new SpeechSynthesisUtterance(testText);
       if (targetVoice) {
@@ -532,9 +558,48 @@ class SpeechManager {
       utterance.pitch = this.getUserPitch() ?? 1.0;
       utterance.volume = 1.0;
 
+      // Keep strong reference on instance & window to protect against Safari GC bug
+      this.activeUtterance = utterance;
+      (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance | null }).__activeUtterance = utterance;
+
+      this.setStatus(`Speaking: "${testText}"...`);
+
+      utterance.onstart = () => {
+        this.setStatus(`Speaking: "${testText}"`);
+      };
+
+      utterance.onend = () => {
+        if (this.activeUtterance === utterance) {
+          this.activeUtterance = null;
+          (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance | null }).__activeUtterance = null;
+        }
+        this.setStatus('Ready');
+      };
+
+      utterance.onerror = (e) => {
+        console.warn('[TKD Audio] Voice test error:', e);
+        if (this.activeUtterance === utterance) {
+          this.activeUtterance = null;
+          (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance | null }).__activeUtterance = null;
+        }
+        this.setStatus(`Speech error: ${e.error || 'unknown'}`);
+        // Fallback retry without voice object
+        if (targetVoice) {
+          try {
+            const fallback = new SpeechSynthesisUtterance(testText);
+            fallback.lang = isEnglish ? 'en-GB' : 'ko-KR';
+            fallback.rate = isEnglish ? 0.92 : 0.90;
+            fallback.pitch = 1.0;
+            this.activeUtterance = fallback;
+            window.speechSynthesis.speak(fallback);
+          } catch (err) {}
+        }
+      };
+
       window.speechSynthesis.speak(utterance);
     } catch (e) {
       console.warn('[TKD Audio] Voice test error:', e);
+      this.setStatus('Error: ' + String(e));
     }
   }
 
@@ -650,17 +715,42 @@ class SpeechManager {
       }
       utterance.volume = 1.0;
 
+      // Keep strong reference on instance & window to protect against Safari GC bug
+      this.activeUtterance = utterance;
+      (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance | null }).__activeUtterance = utterance;
+
+      this.setStatus(`Speaking: "${textToSpeak}"...`);
+
+      utterance.onstart = () => {
+        this.setStatus(`Speaking: "${textToSpeak}"`);
+      };
+
+      utterance.onend = () => {
+        if (this.activeUtterance === utterance) {
+          this.activeUtterance = null;
+          (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance | null }).__activeUtterance = null;
+        }
+        this.setStatus('Ready');
+      };
+
       console.log(`[TKD Audio] Speaking with: "${activeVoice?.name || 'system default'}", URI: "${activeVoice?.voiceURI || ''}", isEnglish: ${isEnglish}, pitch: ${finalPitch}`);
 
       // Robust fallback if speech synthesis errors out
       utterance.onerror = (e) => {
         console.warn('Speech synthesis utterance error:', e);
+        if (this.activeUtterance === utterance) {
+          this.activeUtterance = null;
+          (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance | null }).__activeUtterance = null;
+        }
+        this.setStatus(`Speech error: ${e.error || 'unknown'}`);
         if (utterance.voice) {
           try {
             const fallbackUtterance = new SpeechSynthesisUtterance(textToSpeak);
             fallbackUtterance.lang = isEnglish ? 'en-GB' : 'ko-KR';
             fallbackUtterance.rate = isEnglish ? 0.92 : 0.90;
             fallbackUtterance.pitch = 1.0;
+            this.activeUtterance = fallbackUtterance;
+            (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance | null }).__activeUtterance = fallbackUtterance;
             window.speechSynthesis.speak(fallbackUtterance);
           } catch (err) {
             console.warn('Fallback speech error:', err);
@@ -671,12 +761,15 @@ class SpeechManager {
       window.speechSynthesis.speak(utterance);
     } catch (e) {
       console.warn('Speech synthesis error:', e);
+      this.setStatus('Error: ' + String(e));
     }
   }
 
   public stop(): void {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
+      this.activeUtterance = null;
+      (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance | null }).__activeUtterance = null;
     }
   }
 }
