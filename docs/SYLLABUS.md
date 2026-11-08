@@ -1,6 +1,6 @@
 # 🥋 TAGB Syllabus & Terminology Reference Manual
 
-This document provides a comprehensive curriculum reference for the **Tae Kwon-Do Association of Great Britain (TAGB)** / International Taekwon-Do Federation (ITF) syllabus as implemented in **Tae Kwon-Do Trainer**.
+This document provides a comprehensive curriculum reference for the **Tae Kwon-Do Association of Great Britain (TAGB)** / International Taekwon-Do Federation (ITF) syllabus as implemented in **Tae Kwon-Do Trainer** (covering 9th Kup through 2nd Kup).
 
 ---
 
@@ -9,9 +9,14 @@ This document provides a comprehensive curriculum reference for the **Tae Kwon-D
 2. [9th Kup (White Belt with Yellow Stripe)](#2-9th-kup-white-belt-with-yellow-stripe)
 3. [8th Kup (Yellow Belt)](#3-8th-kup-yellow-belt)
 4. [7th Kup (Yellow Belt with Green Stripe)](#4-7th-kup-yellow-belt-with-green-stripe)
-5. [3-Step Sparring Guide (Sambo Matsoki)](#5-3-step-sparring-guide-sambo-matsoki)
-6. [Korean Pronunciation & Terminology Dictionary](#6-korean-pronunciation--terminology-dictionary)
-7. [Extending the Syllabus (Adding Higher Belts)](#7-extending-the-syllabus-adding-higher-belts)
+5. [6th Kup (Green Belt)](#5-6th-kup-green-belt)
+6. [5th Kup (Green Belt with Blue Stripe)](#6-5th-kup-green-belt-with-blue-stripe)
+7. [4th Kup (Blue Belt)](#7-4th-kup-blue-belt)
+8. [3rd Kup (Blue Belt with Red Stripe)](#8-3rd-kup-blue-belt-with-red-stripe)
+9. [2nd Kup (Red Belt)](#9-2nd-kup-red-belt)
+10. [Sparring Progression Guide (Sambo, Ibo, Ilbo & Byogae)](#10-sparring-progression-guide)
+11. [Korean Pronunciation & Terminology Dictionary](#11-korean-pronunciation--terminology-dictionary)
+12. [Extending the Syllabus (Adding 1st Kup & Black Belt)](#12-extending-the-syllabus)
 
 ---
 
@@ -42,314 +47,242 @@ In the TAGB system, students progress through ten student grades (**Kup** / *Gup
 | **Green** | Signifies the plant's growth as the Tae Kwon-Do skills begin to develop. |
 | **Blue** | Signifies the Heaven towards which the plant matures into a towering tree as training in Tae Kwon-Do progresses. |
 | **Red** | Signifies danger, cautioning the student to exercise control and warning the opponent to stay away. |
-| **Black** | Opposite of white, therefore signifying maturity and proficiency in Tae Kwon-Do. Also indicates the wearer's imperviousness to darkness and fear. |
+| **Black** | Opposite to white, therefore signifying maturity and proficiency in Tae Kwon-Do. Also indicates the wearer's imperviousness to darkness and fear. |
 
 ---
 
 ## 2. 9th Kup (White Belt with Yellow Stripe)
 
-*Target Belt for 10th Kup grading candidates.*
-
 ### Pattern (*Tul*): Chon-Ji (천지)
 - **Movements:** 19
 - **Diagram:** Cross (`+`)
 - **Meaning:** *Chon-Ji* literally means "the Heaven the Earth". In the Orient it is interpreted as the creation of the world or the beginning of human history, therefore it is the initial pattern played by the beginner. This pattern consists of two similar parts: one representing Heaven and the other Earth.
-
-### Belt Meaning (Yellow)
-> *"Yellow signifies the earth from which a plant sprouts and takes root as the Tae Kwon-Do foundation is laid."*
+- **Belt Meaning:** Yellow signifies the earth from which a plant sprouts and takes root as the Tae Kwon-Do foundation is laid.
 
 ### Required Terminology
-
-| English Term | Korean Romanization | Hangul | Category | Technical Notes |
-| :--- | :--- | :--- | :--- | :--- |
-| **Walking Stance** | *Gunnun Sogi* | 건눈 서기 | Stance | 50/50 weight distribution, 1.5 shoulder widths long, 1 shoulder width wide |
-| **L-Stance** | *Niunja Sogi* | 니은자 서기 | Stance | 70/30 weight distribution (rear leg heavy), 1.5 shoulder widths long |
-| **Low Block (Outer Forearm)** | *Najunde Bakat Palmok Makgi* | 낮은대 바깥 팔목 막기 | Block | Movement 1 & 9 of Chon-Ji. Blocks low attacks to abdomen/groin. |
-| **Inner Forearm Middle Block** | *An Palmok Kaunde Makgi* | 안 팔목 가운데 막기 | Block | Movement 5 & 13 of Chon-Ji. Deflects incoming chest-height strikes. |
-| **Middle Forefist Punch** | *Kaunde Ap Joomuk Jirugi* | 가운데 앞 주먹 지르기 | Strike | Solar plexus target line in walking stance. |
-| **Front Snap Kick** | *Apcha Busigi* | 앞차 부시기 | Kick | Striking with the ball of the foot (*Ap Kumchi*). |
-
-### Key Theory Questions
-1. **What is the meaning of Chon-Ji?**
-   *Answer:* The Heaven and the Earth (Creation of the world or beginning of human history).
-2. **How many movements are in Chon-Ji?**
-   *Answer:* 19 movements.
-3. **What is the meaning of Yellow Belt?**
-   *Answer:* Signifies the earth from which a plant sprouts and takes root as the Tae Kwon-Do foundation is laid.
+- **Walking Stance** (*Gunnun Sogi*): 50/50 weight distribution, 1.5 shoulder widths long.
+- **L-Stance** (*Niunja Sogi*): 70/30 weight distribution (rear leg heavy).
+- **Low Block (Outer Forearm)** (*Najunde Bakat Palmok Makgi*): Movement 1 of Chon-Ji.
+- **Inner Forearm Middle Block** (*An Palmok Kaunde Makgi*): Movement 5 of Chon-Ji.
+- **Middle Forefist Punch** (*Kaunde Ap Joomuk Jirugi*): Target line solar plexus.
+- **Front Snap Kick** (*Apcha Busigi*): Striking with the ball of the foot (*Ap Kumchi*).
 
 ---
 
 ## 3. 8th Kup (Yellow Belt)
 
-*Target Belt for 9th Kup grading candidates.*
-
 ### Pattern (*Tul*): Dan-Gun (단군)
 - **Movements:** 21
 - **Diagram:** Capital `I`
 - **Meaning:** *Dan-Gun* is named after the holy Dan-Gun, the legendary founder of Korea in the year 2333 B.C.
-
-### Belt Meaning (Green Tag / Green Belt)
-> *"Green signifies the plant's growth as Tae Kwon-Do skills begin to develop."*
+- **Belt Meaning:** Green signifies the plant's growth as Tae Kwon-Do skills begin to develop.
 
 ### Required Terminology
-
-#### Parts of the Body
-| English Term | Korean Romanization | Hangul | Description |
-| :--- | :--- | :--- | :--- |
-| **Backfist** | *Dung Joomuk* | 등 주먹 | Back surface of the clenched fist, used in side strikes. |
-| **Finger tips** | *Sonkut* | 손끝 | Tips of the outstretched fingers, used in thrusting attacks. |
-
-#### Stances
-| English Term | Korean Romanization | Hangul | Description |
-| :--- | :--- | :--- | :--- |
-| **Fixed Stance** | *Gojung Sogi* | 고정 서기 | 50/50 weight distribution, 1.5 shoulder widths long, both feet angled 15° inward. |
-
-#### Strikes, Thrusts & Kicks
-| English Term | Korean Romanization | Hangul | Description |
-| :--- | :--- | :--- | :--- |
-| **Twin Fist Vertical Punch** | *Sang Joomuk sewo Jirugi* | 쌍 주먹 세워 지르기 | Upward double punch with vertical fists (solar plexus height). |
-| **Twin Fist Upset Punch** | *Sang Joomuk Dwijibo Jirugi* | 쌍 주먹 뒤집어 지르기 | Double punch with both palms turned upwards into opponent's ribs. |
-| **Straight Fingertip Thrust** | *Sun Sonkut Tulgi* | 선 손끝 찌르기 | Vertical fingertip thrust straight into the solar plexus. |
-| **Side Punch** | *Yop Jirugi* | 옆 지르기 | Lateral horizontal punch executed from sitting or L-stance. |
-| **Back Fist Side Strike** | *Dung Joomuk Yop Taerigi* | 등 주먹 옆 때리기 | Lateral snapping strike using the backfist. |
-| **Back Piercing Kick** | *Dwit Chagi* | 뒤 차기 | Linear backward thrust using the heel (*Dwitchhook*). |
-
-#### Blocks
-| English Term | Korean Romanization | Hangul | Description |
-| :--- | :--- | :--- | :--- |
-| **Wedging Block** | *Hechyo Makgi* | 헤쳐 막기 | Double outward block separating opponent's two-handed grasp or punch. |
-| **Waist Block** | *Hori Makgi (Anuro / Bakuro)* | 허리 막기 | Low waist-level deflection (inward or outward). |
-| **Outer Forearm High Side Block** | *Bakat Palmok Nopunde Yop Makgi* | 바깥 팔목 높은대 옆 막기 | High side-facing block defending the temple/eye line. |
-
-### Key Theory Questions
-1. **Who is Dan-Gun named after?**
-   *Answer:* The holy Dan-Gun, legendary founder of Korea in 2333 B.C.
-2. **How many movements are in Dan-Gun?**
-   *Answer:* 21 movements.
-3. **What is the meaning of Green Belt?**
-   *Answer:* Signifies the plant's growth as Tae Kwon-Do skills begin to develop.
-4. **What 3-step sparring numbers are required for 8th Kup?**
-   *Answer:* Steps 1 through 4.
+- **Backfist** (*Dung Joomuk*), **Finger tips** (*Sonkut*), **Fixed Stance** (*Gojung Sogi*).
+- **Twin Fist Vertical Punch** (*Sang Joomuk sewo Jirugi*), **Twin Fist Upset Punch** (*Sang Joomuk Dwijibo Jirugi*).
+- **Straight Fingertip Thrust** (*Sun Sonkut Tulgi*), **Side Punch** (*Yop Jirugi*), **Back Fist Side Strike** (*Dung Joomuk Yop Taerigi*).
+- **Wedging Block** (*Hechyo Makgi*), **Waist Block** (*Hori Makgi*), **Outer Forearm High Side Block** (*Bakat Palmok Nopunde Yop Makgi*), **Back Piercing Kick** (*Dwit Chagi*).
 
 ---
 
 ## 4. 7th Kup (Yellow Belt with Green Stripe)
 
-*Target Belt for 8th Kup grading candidates.*
-
 ### Pattern (*Tul*): Do-San (도산)
 - **Movements:** 24
 - **Diagram:** Stepped `Z` shape
-- **Meaning:** *Do-San* is the pseudonym of the patriot **Ahn Ch'ang Ho (1876–1938)** who devoted his entire life to furthering the education of Korea and its independence movement. The 24 movements represent his entire life, which he devoted to education and freedom.
-
-### Belt Meaning (Green)
-> *"Green signifies the plant's growth as Tae Kwon-Do skills begin to develop."*
+- **Meaning:** *Do-San* is the pseudonym of the patriot Ahn Ch'ang Ho (1876–1938) who devoted his entire life to furthering the education of Korea and its independence movement.
+- **Belt Meaning:** Green signifies the plant's growth as Tae Kwon-Do skills begin to develop.
 
 ### Required Terminology
-
-#### Parts of the Body
-| English Term | Korean Romanization | Hangul | Description |
-| :--- | :--- | :--- | :--- |
-| **Heel** | *Dwitchhook* | 뒤축 | Base of the foot heel, used in back piercing kicks and reverse turning kicks. |
-| **Palm** | *Sonbadak* | 손바닥 | Open flat palm, used for checking, pressing, and upward blocks. |
-| **Toes** | *Balkut* | 발끝 | Tips of the toes, used in specialized penetrating kicks. |
-
-#### Stances
-| English Term | Korean Romanization | Hangul | Description |
-| :--- | :--- | :--- | :--- |
-| **Low Stance** | *Nachuo Sogi* | 낮춰 서기 | Similar to walking stance but elongated by one foot length (more stable base). |
-| **Rear Foot Stance** | *Dwitbal Sogi* | 뒷발 서기 | 90/10 weight distribution (90% on rear bent leg, front heel raised slightly off the floor). |
-
-#### Techniques & Kicks
-| English Term | Korean Romanization | Hangul | Description |
-| :--- | :--- | :--- | :--- |
-| **Flat Fingertip Thrust** | *Opun Sonkut Tulgi* | 엎은 손끝 찌르기 | Horizontal spear-hand thrust with palm facing downward. |
-| **Circular Block** | *Dollymio Makgi* | 돌리며 막기 | Scooping circular deflection executed in Do-San pattern using the inner forearm. |
-| **Palm Upward Block** | *Sonbadak Ollyo Makgi* | 손바닥 올려 막기 | Upward rising block with the open palm pushing an attack overhead. |
-| **Reverse Turning Kick** | *Bandae Dollyo Chagi* | 반대 돌려 차기 | Spinning reverse heel/hooking kick targeting head or neck. |
-| **Reverse Knifehand** | *Sonkal Dung* | 손날등 | Thumb side of the knifehand, used for inward slashing strikes. |
-| **Release from Grab** | *Jappyosul Tae* | 잡혔을 때 | Self-defence escape rotational manoeuvre when grabbed by the wrist. |
+- **Heel** (*Dwitchhook*), **Palm** (*Sonbadak*), **Toes** (*Balkut*).
+- **Low Stance** (*Nachuo Sogi*), **Rear Foot Stance** (*Dwitbal Sogi*).
+- **Flat Fingertip Thrust** (*Opun Sonkut Tulgi*), **Circular Block** (*Dollymio Makgi*), **Palm Upward Block** (*Sonbadak Ollyo Makgi*).
+- **Reverse Turning Kick** (*Bandae Dollyo Chagi*), **Reverse Knifehand** (*Sonkal Dung*), **Release from Grab** (*Jappyosul Tae*).
+- **Sparring:** 3-step sparring (*Sambo Matsoki*) Steps 1 through 7 (with focus on counters for Steps 5, 6, and 7).
 
 ---
 
-## 5. 3-Step Sparring Guide (Sambo Matsoki)
+## 5. 6th Kup (Green Belt)
 
-In TAGB grading examinations, **3-Step Sparring** (*Sambo Matsoki*) is practiced to teach students proper distance, timing, target acquisition, stance stability, and counter-striking.
+### Pattern (*Tul*): Won-Hyo (원효)
+- **Movements:** 28
+- **Diagram:** Capital `I`
+- **Meaning:** *Won-Hyo* was the noted monk who introduced Buddhism to the Silla Dynasty in the year **686 A.D.**
+- **Belt Meaning:** Blue signifies the Heaven towards which the plant matures into a towering tree as training in Tae Kwon-Do progresses.
 
-For **7th Kup**, students are responsible for **Steps 1 through 7**:
-
-### Attacker Role (Steps 1–7)
-- **Preparation:** Measure distance, step back into right walking stance low block (*Gunnun So Bakat Palmok Najunde Makgi*), shout *"Kihap!"*.
-- **Execution:** Advance 3 consecutive steps forward in walking stance, delivering middle forefist punches (*Gunnun So Kaunde Ap Joomuk Jirugi*).
-
-### Defender Sequences (7th Kup Focus: Steps 5, 6, 7)
-
-#### Step 5: Dual Block & Punch in Sitting Stance
-1. **Move 1:** Step right leg back into right L-stance outer forearm block (*Niunja So Bakat Palmok Makgi*) to inside of punch.
-2. **Move 2:** Step left leg back into left L-stance outer forearm block.
-3. **Move 3 & Counter:** Step right leg back. On the third attack, pivot on the left foot moving right into a **sitting stance** (*Annun Sogi*), simultaneously executing an **outer forearm block and middle punch**.
-
-#### Step 6: Knife Hand Block & Inward Neck Strike
-1. **Move 1:** Step right leg back into right L-stance knife hand block (*Niunja So Sonkal Makgi*).
-2. **Move 2:** Step left leg back into left L-stance knife hand block.
-3. **Move 3 & Counter:** Pivot as in Step 5 into sitting stance, blocking the attack and delivering an **inward knife hand high strike** (*Sonkal Anuro Taerigi*) directly to the opponent's neck.
-
-#### Step 7: Guarding Block, Front Snap Kick & Double Punch
-1. **Move 1:** Step right leg back into right L-stance outer forearm block to inside of punch.
-2. **Move 2:** Step left leg back into left L-stance outer forearm block.
-3. **Move 3 & Counter:** Slide back into right L-stance **middle forearm guarding block** (*Niunja So Palmok Daebi Makgi*). Immediately deliver a **back leg front snap kick** (*Apcha Busigi*) to the midsection, plant the kicking foot forward into right walking stance, and execute a **rapid double punch** (*Doo Jirugi*) to the solar plexus.
+### Required Terminology
+- **Parts of the Body:**
+  - Elbow (*Palkup*), Knee (*Moorup*), Side sole (*Yop Bal Badak*), Reverse footsword (*Bakal Dung*), Sole (*Kumchi*).
+- **Stances:**
+  - Parallel ready stance (*Narani jumbi sogi*), Close stance (*Moa sogi*), Close ready stance (*Moa jumbi sogi*), Bending ready stance (*Guburyo jumbi sogi*).
+- **Kicks & Blocks:**
+  - Knee kick (*Moorup chagi*), Crescent kick (*Bandal chagi* - defensive), Hooking kick (*Golcho chagi*), Reverse turning hooking kick (*Bandae dollyo goro chagi*).
+  - Palm hooking block (*Sonbadak golcho makgi*), Twin knife hand block (*Sang sonkal makgi*), Reverse knife hand block (*Sonkal dung makgi*), X-fist pressing block (*Kyocha joomuk noollo makgi*), Double forearm block (*Doo palmok makgi*).
+- **Strikes & Thrusts:**
+  - Front elbow strike (*Ap palkup Taerigi*), Upper elbow strike (*Wi palkup Taerigi*), Side elbow thrust (*Yop palkup tulgi*), Reverse knife hand inward front strike (*Sonkal dung anuro ap taerigi*), Crescent punch (*Bandal jirugi*).
+- **Sparring:**
+  - 3-step sparring (*Sambo Matsoki*) Advanced Steps 8, 9, 10.
+  - Semi-free sparring (*Ban Jayoo Matsoki*) Basic (Attacker front, side, turning kick in order; counter is reverse punch).
 
 ---
 
-## 6. Korean Pronunciation & Terminology Dictionary
+## 6. 5th Kup (Green Belt with Blue Stripe)
 
-The audio engine in **Tae Kwon-Do Trainer** uses a dual phonetic engine:
-- If a Korean (`ko-KR`) system voice is available, native Hangul text is spoken.
-- If only English (`en-GB` or `en-US`) system voices are installed, custom phonetic respellings are delivered so that English TTS engines produce convincing Korean pronunciation.
+### Pattern (*Tul*): Yul-Gok (율곡)
+- **Movements:** 38
+- **Diagram:** Scholar (`士`)
+- **Meaning:** *Yul-Gok* is the pseudonym of the great philosopher and scholar **Yi I (1536–1584 A.D.)** nicknamed the "Confucius of Korea". The 38 movements refer to his birthplace on 38° latitude and the diagram represents "Scholar".
+- **Belt Meaning:** Blue signifies the Heaven towards which the plant matures into a towering tree as training in Tae Kwon-Do progresses.
 
-### Complete Dictionary Table
+### Required Terminology
+- **Parts of Body & Stance:**
+  - Arc hand (*Bandalson*), 'X' Stance (*Kyocha Sogi*).
+- **Strikes & Blocks:**
+  - Downward punch (*Naeryo jirugi*), High elbow strike (*Nopun palkup taerigi*).
+  - Knife hand low guarding block (*Sonkal najunde daebi makgi*), Palm pressing block (*Sonbadak noollo makgi*), 'U' shaped block (*Digutja makgi*), 'X' fist rising block (*Kyocha joomuk chookyo makgi*).
+- **Sparring:**
+  - Two-step sparring (*Ibo Matsoki*) Basic Routines 1 to 4.
+  - Semi-free sparring (*Ban Jayoo Matsoki*) Intermediate (kicks: front, side, turning, reverse side).
 
-| Korean (Romanized) | Hangul | English Meaning | Phonetic Spoken String (for English TTS) |
+---
+
+## 7. 4th Kup (Blue Belt)
+
+### Pattern (*Tul*): Joong-Gun (중근)
+- **Movements:** 32
+- **Diagram:** Capital `I`
+- **Meaning:** *Joong-Gun* is named after the patriot **An Joong-Gun** who assassinated Hiro-Bumi Ito, the first Japanese governor-general of Korea who played the leading part in the Korea-Japan merger. The 32 movements represent Mr. An's age when executed at Lui-Shung prison in **1910**.
+- **Belt Meaning:** Red signifies Danger, cautioning the student to exercise control, and warning the opponent to stay away.
+
+### Required Terminology
+- **Kicks:**
+  - Vertical kick (*Sewo chagi*), Downward kick (*Naeryo chagi*), Flying kick (*Twimyo chagi*).
+- **Blocks & Strikes:**
+  - W-Shape block (*San Makgi*), Double forearm pushing block (*Doo palmok miro makgi*), Twin palm upward block (*Sang sonbadak ollyo makgi*), Upset fingertip thrust (*Dwijibun sonkut tulgi*), Angle punch (*Giokja jirugi*).
+- **Sparring & Pad Work:**
+  - Two-step sparring (*Ibo Matsoki*) Advanced Routines 5 to 8.
+  - Pad work (*Byogae*): Measure and kick using Side kick, Turning kick, Reverse side kick, Reverse turning kick.
+  - Semi-free sparring (*Ban Jayoo Matsoki*) Advanced (any 3 hand/foot attacks).
+
+---
+
+## 8. 3rd Kup (Blue Belt with Red Stripe)
+
+### Pattern (*Tul*): Toi-Gye (퇴계)
+- **Movements:** 37
+- **Diagram:** Scholar (`士`)
+- **Meaning:** *Toi-Gye* is the pen name of the noted scholar **Yi Hwang (16th Century A.D.)**, an authority on neo-Confucianism. The 37 movements refer to his birthplace on 37° latitude, and the diagram represents "Scholar".
+- **Belt Meaning:** Red signifies Danger, cautioning the student to exercise control, and warning the opponent to stay away.
+
+### Required Terminology
+- **Stance & Strikes:**
+  - Vertical stance (*Soojik Sogi*), Upward punch (*Ollyo Jirugi*), Knife hand downward strike (*Sonkal naeryo taerigi*).
+- **Blocks & Kicks:**
+  - Palm pushing block (*Sonbadak miro makgi*), Flying back piercing kick (*Twimyo dwit cha jirugi*), Twin foot front kick (*Sangbal apcha busigi*).
+- **Sparring & Pad Work:**
+  - One-step sparring (*Ilbo Matsoki*): High section obverse punch attack in walking stance.
+  - Pad work (*Byogae*): Single 45 kick, Double 45 kick, Turning kick, Axe kick.
+
+---
+
+## 9. 2nd Kup (Red Belt)
+
+### Pattern (*Tul*): Hwa-Rang (화랑)
+- **Movements:** 29
+- **Diagram:** Capital `I`
+- **Meaning:** *Hwa-Rang* is named after the **Hwa-Rang youth group** which originated in the Silla Dynasty about **1350 years ago**. This group became the driving force for the unification of the three kingdoms of Korea. The 29 movements refer to the **29th Infantry Division**, where Tae Kwon-Do developed into maturity.
+- **Belt Meaning:** Black is opposite to white, therefore signifying maturity and proficiency in Tae Kwon-Do, and the wearer's imperviousness to darkness and fear.
+
+### Required Terminology
+- **Stance & Kicks:**
+  - Close ready stance 'C' (*Moa Jumbi 'C'*), Twisting kick (*Bituro chagi*), Jumping kick (*Twimyo chagi*).
+- **Blocks:**
+  - 'X' fist middle side block (*Kyocha joomuk yop makgi*), Twin palm upward block (*Sang sonbadak ollyo makgi*).
+- **Sparring & Pad Work:**
+  - Advanced One-step sparring (*Ilbo Matsoki*) with combination counters.
+  - Pad work (*Byogae*) routines using hands and feet.
+
+---
+
+## 10. Sparring Progression Guide
+
+### 3-Step Sparring (*Sambo Matsoki*)
+- **7th Kup:** Steps 1 to 7.
+- **6th Kup (Advanced):**
+  - **Step 8:** Knifehand block $\rightarrow$ slide back into L-stance forearm guarding block $\rightarrow$ back leg side kick to mid section $\rightarrow$ land in left L-stance right backfist to temple.
+  - **Step 9:** Pushing block with left palm heel $\rightarrow$ move left leg across $\rightarrow$ right leg turning kick $\rightarrow$ land in left Vertical stance right knifehand strike to neck/kidneys.
+  - **Step 10:** Slide back into guarding block $\rightarrow$ right leg reverse side kick $\rightarrow$ right walking stance left reverse knifehand inward strike $\rightarrow$ slip front leg into left L-stance guarding block.
+
+### 2-Step Sparring (*Ibo Matsoki*)
+- **5th Kup (Basic 1–4):**
+  - **1:** High punch, front kick $\rightarrow$ Counter: Twin fist vertical punch.
+  - **2:** Side punch, turning kick $\rightarrow$ Counter: Slide into right L-stance, right side elbow.
+  - **3:** Front kick, twin vertical punch $\rightarrow$ Counter: Knee kick while pulling opponent shoulders.
+  - **4:** Flat fingertip thrust, side kick $\rightarrow$ Counter: Front kick to coccyx, twin upset punch to kidneys.
+- **4th Kup (Advanced 5–8):**
+  - **5:** Right reverse side kick, left open fist strike $\rightarrow$ Counter: Right walking stance reverse knifehand inward strike.
+  - **6:** Right turning kick, left arc-hand strike $\rightarrow$ Counter: Left side kick while holding grabbed arm.
+  - **7:** Right fixed stance side fist strike, left reverse turning kick $\rightarrow$ Counter: Right high reverse turning kick.
+  - **8:** Right middle side kick, right knifehand high side strike $\rightarrow$ Counter: Left 'X' stance backfist high side strike.
+
+### 1-Step Sparring (*Ilbo Matsoki*)
+- **3rd Kup & 2nd Kup:**
+  - Standardized attack from parallel ready stance: Step forward into right walking stance high section obverse punch.
+  - Defender uses advanced combinations of stances, blocks, counters, sweeps, and takedowns.
+
+---
+
+## 11. Korean Pronunciation & Terminology Dictionary
+
+| Korean (Romanized) | Hangul | English Meaning | Phonetic Spoken String |
 | :--- | :--- | :--- | :--- |
 | **Chon-Ji** | 천지 | Pattern (19 moves) - Heaven & Earth | *"chon gee"* |
-| **Dan-Gun** | 단군 | Pattern (21 moves) - Holy founder | *"dahn gun"* |
+| **Dan-Gun** | 단군 | Pattern (21 moves) - Holy founder 2333 B.C. | *"dahn gun"* |
 | **Do-San** | 도산 | Pattern (24 moves) - Patriot Ahn Ch'ang Ho | *"doh sahn"* |
-| **Gunnun Sogi** | 건눈 서기 | Walking Stance | *"gun noon so gee"* |
-| **Niunja Sogi** | 니은자 서기 | L-Stance | *"nee oon jah so gee"* |
-| **Annun Sogi** | 앉은 서기 | Sitting Stance | *"ahn noon so gee"* |
-| **Gojung Sogi** | 고정 서기 | Fixed Stance | *"goh joong so gee"* |
-| **Nachuo Sogi** | 낮춰 서기 | Low Stance | *"nah choo oh so gee"* |
-| **Dwitbal Sogi** | 뒷발 서기 | Rear Foot Stance | *"dweet bahl so gee"* |
-| **Ap Joomuk** | 앞 주먹 | Forefist | *"ap joo mook"* |
-| **Dung Joomuk** | 등 주먹 | Backfist | *"doong joo mook"* |
-| **Sonkut** | 손끝 | Fingertips | *"sohn koot"* |
-| **Sonbadak** | 손바닥 | Palm of hand | *"sohn bah dahk"* |
-| **Sonkal Dung** | 손날등 | Reverse Knifehand | *"sohn kahl doong"* |
-| **Ap Kumchi** | 앞꿈치 | Ball of the foot | *"ap koom chee"* |
-| **Dwitchhook** | 뒤축 | Heel | *"dweet chook"* |
-| **Balkut** | 발끝 | Toes | *"bahl koot"* |
-| **Balkal** | 발날 | Footsword | *"bahl kahl"* |
-| **Baldung** | 발등 | Instep | *"bahl doong"* |
-| **Makgi** | 막기 | Block | *"mah gee"* |
-| **Jirugi** | 지르기 | Punch | *"jee roo gee"* |
-| **Tulgi** | 찌르기 | Thrust | *"tool gee"* |
-| **Chagi** | 차기 | Kick | *"chah gee"* |
-| **Taerigi** | 때리기 | Strike | *"teh ree gee"* |
-| **Apcha Busigi** | 앞차 부시기 | Front Snap Kick | *"ap chah boo see gee"* |
-| **Yop Chagi** | 옆 차기 | Side Piercing Kick | *"yup chah gee"* |
-| **Dollyo Chagi** | 돌려 차기 | Turning Kick | *"dohl lyoh chah gee"* |
-| **Dwit Chagi** | 뒤 차기 | Back Piercing Kick | *"dweet chah gee"* |
-| **Bandae Dollyo Chagi** | 반대 돌려 차기 | Reverse Turning Kick | *"bahn deh dohl lyoh chah gee"* |
-| **Hechyo Makgi** | 헤쳐 막기 | Wedging Block | *"heht choh mah gee"* |
-| **Dollymio Makgi** | 돌리며 막기 | Circular Block | *"dohl lee myoh mah gee"* |
-| **Jappyosul Tae** | 잡혔을 때 | Release from Grab | *"jahp pyo sool teh"* |
-| **Sambo Matsoki** | 삼보 맞서기 | 3-Step Sparring | *"sahm boh maht soh gee"* |
+| **Won-Hyo** | 원효 | Pattern (28 moves) - Monk Silla Dynasty 686 A.D. | *"wahn hyoh"* |
+| **Yul-Gok** | 율곡 | Pattern (38 moves) - Scholar Yi I (1536-1584) | *"yool gohk"* |
+| **Joong-Gun** | 중근 | Pattern (32 moves) - Patriot An Joong-Gun (1910) | *"joong goon"* |
+| **Toi-Gye** | 퇴계 | Pattern (37 moves) - Scholar Yi Hwang (16th C.) | *"tweh gyeh"* |
+| **Hwa-Rang** | 화랑 | Pattern (29 moves) - Hwa-Rang youth / 29th Division | *"hwah rahng"* |
+| **Palkup** | 팔굽 | Elbow | *"pahl goop"* |
+| **Moorup** | 무릎 | Knee | *"moo roop"* |
+| **Bandalson** | 반달손 | Arc hand | *"bahn dahl sohn"* |
+| **Yop Bal Badak** | 옆 발바닥 | Side sole | *"yuhp bahl bah dahk"* |
+| **Bakal Dung** | 발칼 등 | Reverse footsword | *"bah kahl doong"* |
+| **Kumchi** | 꿈치 | Sole | *"koom chee"* |
+| **Guburyo jumbi sogi** | 구부려 준비 서기 | Bending ready stance | *"goo boo ryoh joon bee so gee"* |
+| **Kyocha Sogi** | 교차 서기 | 'X' Stance | *"kyoh chah so gee"* |
+| **Soojik Sogi** | 수직 서기 | Vertical Stance | *"soo jeek so gee"* |
+| **Moa Jumbi 'C'** | 모아 준비 씨 | Close ready 'C' | *"moh ah joon bee see"* |
+| **San Makgi** | 산 막기 | W-Shape block | *"sahn mahk gee"* |
+| **Digutja makgi** | 디귿자 막기 | 'U' shaped block | *"dee goot jah mahk gee"* |
+| **Kyocha joomuk noollo makgi** | 교차 주먹 눌러 막기 | 'X' fist pressing block | *"kyoh chah joo mook nool loh mahk gee"* |
+| **Kyocha joomuk chookyo makgi** | 교차 주먹 추켜 막기 | 'X' fist rising block | *"kyoh chah joo mook choo kyoh mahk gee"* |
+| **Kyocha joomuk yop makgi** | 교차 주먹 옆 막기 | 'X' fist middle side block | *"kyoh chah joo mook yuhp mahk gee"* |
+| **Doo palmok makgi** | 두 팔목 막기 | Double forearm block | *"doo pahl mohk mahk gee"* |
+| **Doo palmok miro makgi** | 두 팔목 밀어 막기 | Double forearm pushing block | *"doo pahl mohk mee roh mahk gee"* |
+| **Sang sonkal makgi** | 쌍 손칼 막기 | Twin knife hand block | *"sahng sohn kahl mahk gee"* |
+| **Sonkal dung makgi** | 손칼등 막기 | Reverse knife hand block | *"sohn kahl doong mahk gee"* |
+| **Sang sonbadak ollyo makgi** | 쌍 손바닥 올려 막기 | Twin palm upward block | *"sahng sohn bah dahk ohl lyoh mahk gee"* |
+| **Sonbadak miro makgi** | 손바닥 밀어 막기 | Palm pushing block | *"sohn bah dahk mee roh mahk gee"* |
+| **Sewo chagi** | 세워 차기 | Vertical kick | *"seh woh chah gee"* |
+| **Naeryo chagi** | 내려 차기 | Downward kick | *"neh ryoh chah gee"* |
+| **Twimyo chagi** | 뛰며 차기 | Flying kick / Jumping kick | *"twee myoh chah gee"* |
+| **Bandal chagi** | 반달 차기 | Crescent kick | *"bahn dahl chah gee"* |
+| **Golcho chagi** | 걸쳐 차기 | Hooking kick | *"gohl choh chah gee"* |
+| **Bituro chagi** | 비틀어 차기 | Twisting kick | *"bee tool uh chah gee"* |
+| **Sangbal apcha busigi** | 쌍발 앞차 부시기 | Twin foot front kick | *"sahng bahl ahp chah boo see gee"* |
+| **Twimyo dwit cha jirugi** | 뛰며 뒤차 지르기 | Flying back piercing kick | *"twee myoh dweet chah jee roo gee"* |
+| **Giokja jirugi** | 기역자 지르기 | Angle punch | *"gee uhk jah jee roo gee"* |
+| **Ollyo Jirugi** | 올려 지르기 | Upward punch | *"ohl lyoh jee roo gee"* |
+| **Naeryo jirugi** | 내려 지르기 | Downward punch | *"neh ryoh jee roo gee"* |
+| **Dwijibun sonkut tulgi** | 뒤집은 손끝 뚫기 | Upset fingertip thrust | *"dwee jee boon sohn koot tool gee"* |
+| **Ibo Matsoki** | 이보 맞서기 | Two-Step Sparring | *"ee boh maht soh gee"* |
+| **Ilbo Matsoki** | 일보 맞서기 | One-Step Sparring | *"eel boh maht soh gee"* |
+| **Byogae** | 벽개 | Pad Work | *"byoh geh"* |
 
 ---
 
-## 7. Extending the Syllabus (Adding Higher Belts)
+## 12. Extending the Syllabus
 
-The codebase is engineered modularly so that contributing higher grades (e.g. 6th Kup Green Belt, 5th Kup Blue Tag, up to 1st Dan Black Belt) requires only simple declarative data files without altering the game loop.
-
-### Step-by-Step Guide: Adding 6th Kup (Green Belt)
-
-#### Step 1: Create `src/data/grades/kup6.ts`
-Create the grade definition file matching the `KupGrade` TypeScript interface:
-
-```typescript
-import type { KupGrade } from '../types.ts';
-
-export const kup6: KupGrade = {
-  id: '6th-kup',
-  gradeNumber: 6,
-  title: '6th Kup - Green Belt',
-  beltColor: '#10b981', // Emerald green
-  pattern: {
-    name: 'Won-Hyo',
-    movements: 28,
-    meaning: 'Won-Hyo was the noted monk who introduced Buddhism to the Silla Dynasty in the year 686 A.D.'
-  },
-  beltMeaning: 'Blue signifies the Heaven towards which the plant matures into a towering tree as training in Tae Kwon-Do progresses.',
-  terms: [
-    {
-      id: '6th-closed-stance',
-      category: 'stance',
-      english: 'Closed Stance',
-      korean: 'Moa Sogi',
-      notes: 'Feet together, touching at inner edges'
-    },
-    {
-      id: '6th-bending-ready-stance',
-      category: 'stance',
-      english: 'Bending Ready Stance A',
-      korean: 'Goburyo Junbi Sogi A',
-      notes: 'Preparation stance for side piercing kick'
-    },
-    {
-      id: '6th-circular-block',
-      category: 'block',
-      english: 'Circular Block',
-      korean: 'Dollymio Makgi',
-      notes: 'Executed in Won-Hyo'
-    }
-  ],
-  theory: [
-    {
-      id: 'theory-wonhyo-pattern',
-      prompt: 'What is the 6th Kup Pattern?',
-      correctAnswer: 'Won-Hyo ( 28 Movements )',
-      distractors: ['Do-San ( 24 Movements )', 'Dan-Gun ( 21 Movements )', 'Yul-Gok ( 38 Movements )'],
-      explanation: 'Won-Hyo is the pattern for 6th Kup with 28 movements.'
-    }
-  ]
-};
-```
-
-#### Step 2: Register in `src/data/grades/index.ts`
-Export the new grade and include it in `ALL_GRADES`:
-
-```typescript
-import { kup9 } from './kup9';
-import { kup8 } from './kup8';
-import { kup7 } from './kup7';
-import { kup6 } from './kup6';
-
-export const ALL_GRADES = [kup9, kup8, kup7, kup6];
-```
-
-#### Step 3: Add Hangul & Phonetic Mappings in `src/utils/pronunciation.ts`
-Update `HANGUL_MAP` and `KOREAN_PHONETICS` with any new Korean terms introduced:
-
-```typescript
-const HANGUL_MAP: Record<string, string> = {
-  // Existing terms...
-  'Won-Hyo': '원효',
-  'Moa Sogi': '모아 서기',
-  'Goburyo Junbi Sogi A': '구부려 준비 서기 에이'
-};
-
-const KOREAN_PHONETICS: Record<string, string> = {
-  // Existing terms...
-  'Won-Hyo': 'wahn hyoh',
-  'Moa Sogi': 'moh ah so gee',
-  'Goburyo Junbi Sogi A': 'goh boo ryoh joon bee so gee ay'
-};
-```
-
-#### Step 4: Add Unit Tests in `test/syllabus.test.ts`
-Add assertions to verify data integrity, non-empty terms, valid question distractors, and unique answer options:
-
-```typescript
-import { kup6 } from '../src/data/grades/kup6.ts';
-
-assert(kup6.id === '6th-kup', '6th Kup id must be 6th-kup');
-assert(kup6.pattern.movements === 28, 'Won-Hyo must have 28 movements');
-```
-
-#### Step 5: Test & Build
-Run the automated test runner and build command:
-```bash
-npm test
-npm run build
-```
-The game will automatically include the new belt on the grade selection screen, in cumulative exams, and in voice configuration.
+To add **1st Kup** (Red Belt with Black Stripe / *Choong-Moo*) or **1st Dan** (Black Belt / *Kwang-Gae*, *Po-Eun*, *Ge-Baek*), create `src/data/grades/kup1.ts` and register it in `src/data/grades/index.ts`. All test runners, deck generators, voice pickers, and cumulative grading exams automatically adapt.

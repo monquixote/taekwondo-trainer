@@ -33,10 +33,15 @@ Preparing for a martial arts belt grading exam requires memorizing dozens of for
 
 ## 🥋 Core Features
 
-### 1. Authentic TAGB Syllabus Content
+### 1. Authentic TAGB Syllabus Content (9th to 2nd Kup)
 - **9th Kup (White Belt / Yellow Tag)**: Walking stance (*Gunnun Sogi*), L-stance (*Niunja Sogi*), Front Snap Kick (*Apcha Busigi*), low/middle blocks, and the 19 movements of pattern **Chon-Ji**.
 - **8th Kup (Yellow Belt)**: Fixed stance (*Gojung Sogi*), Twin fist vertical punch (*Sang Joomuk sewo Jirugi*), Backfist side strike, Wedging block (*Hechyo Makgi*), and the 21 movements of pattern **Dan-Gun**.
-- **7th Kup (Yellow Belt / Green Tag)**: Heel (*Dwitchhook*), Palm (*Sonbadak*), Toes (*Balkut*), Low stance (*Nachuo Sogi*), Rear foot stance (*Dwitbal Sogi*), Flat fingertip thrust (*Opun Sonkut Tulgi*), Circular block (*Dollymio Makgi*), Reverse turning kick (*Bandae Dollyo Chagi*), 3-step sparring (*Sambo Matsoki*), and the 24 movements of pattern **Do-San**.
+- **7th Kup (Yellow Belt / Green Tag)**: Heel (*Dwitchhook*), Palm (*Sonbadak*), Toes (*Balkut*), Low stance (*Nachuo Sogi*), Rear foot stance (*Dwitbal Sogi*), Flat fingertip thrust (*Opun Sonkut Tulgi*), Circular block (*Dollymio Makgi*), Reverse turning kick (*Bandae Dollyo Chagi*), 3-step sparring (*Sambo Matsoki* 1–7), and the 24 movements of pattern **Do-San**.
+- **6th Kup (Green Belt)**: Elbow (*Palkup*), Knee (*Moorup*), Side sole (*Yop Bal Badak*), Reverse footsword (*Bakal Dung*), Sole (*Kumchi*), Bending ready stance (*Guburyo jumbi sogi*), Crescent kick (*Bandal chagi*), Double forearm block (*Doo palmok makgi*), 3-step sparring (*Sambo Matsoki* 8–10), and the 28 movements of pattern **Won-Hyo**.
+- **5th Kup (Green Belt / Blue Tag)**: Arc hand (*Bandalson*), 'X' stance (*Kyocha Sogi*), Downward punch (*Naeryo jirugi*), High elbow strike (*Nopun palkup taerigi*), 'U' shaped block (*Digutja makgi*), 'X' fist rising block (*Kyocha joomuk chookyo makgi*), Two-step sparring (*Ibo Matsoki* 1–4), and the 38 movements of pattern **Yul-Gok**.
+- **4th Kup (Blue Belt)**: Vertical kick (*Sewo chagi*), Downward kick (*Naeryo chagi*), Flying kick (*Twimyo chagi*), W-Shape block (*San Makgi*), Double forearm pushing block (*Doo palmok miro makgi*), Angle punch (*Giokja jirugi*), Upset fingertip thrust (*Dwijibun sonkut tulgi*), Two-step sparring (*Ibo Matsoki* 5–8), Pad work (*Byogae*), and the 32 movements of pattern **Joong-Gun**.
+- **3rd Kup (Blue Belt / Red Tag)**: Vertical stance (*Soojik Sogi*), Upward punch (*Ollyo Jirugi*), Palm pushing block (*Sonbadak miro makgi*), Knife hand downward strike (*Sonkal naeryo taerigi*), Flying back piercing kick (*Twimyo dwit cha jirugi*), Twin foot front kick (*Sangbal apcha busigi*), One-step sparring (*Ilbo Matsoki*), and the 37 movements of pattern **Toi-Gye**.
+- **2nd Kup (Red Belt)**: Close ready 'C' (*Moa Jumbi 'C'*), Twisting kick (*Bituro chagi*), Jumping kick (*Twimyo chagi*), 'X' fist middle side block (*Kyocha joomuk yop makgi*), Twin palm upward block (*Sang sonbadak ollyo makgi*), Advanced One-step sparring, and the 29 movements of pattern **Hwa-Rang**.
 
 ### 2. Smart Spaced-Repetition & Zero Immediate Repeats
 - Incorporates a weighted sampling algorithm based on student performance history.

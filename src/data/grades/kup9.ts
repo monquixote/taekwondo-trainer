@@ -1,4 +1,4 @@
-import { KupGrade } from '../types';
+import type { KupGrade } from '../types.ts';
 
 export const kup9: KupGrade = {
   id: '9th-kup',
