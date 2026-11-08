@@ -11,7 +11,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.gradeId = gradeId;
     this.basePosition = { x, y };
     this.setOrigin(0.5, 1);
-    this.setScale(1.25);
+    this.setScale(2.5);
     scene.add.existing(this);
   }
 
@@ -39,7 +39,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     // Lunge forward slightly
     this.scene.tweens.add({
       targets: this,
-      x: this.basePosition.x + 35,
+      x: this.basePosition.x + 70,
       duration: 120,
       yoyo: true,
       ease: 'Quad.easeOut',
@@ -57,7 +57,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     // Knockback shudder
     this.scene.tweens.add({
       targets: this,
-      x: this.basePosition.x - 20,
+      x: this.basePosition.x - 40,
       duration: 100,
       yoyo: true,
       repeat: 2,

@@ -12,7 +12,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.enemyType = enemyType;
     this.targetX = x;
     this.setOrigin(0.5, 1);
-    this.setScale(1.25);
+    this.setScale(2.5);
     scene.add.existing(this);
   }
 
@@ -22,7 +22,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     const steps = Math.max(1, Math.floor(duration / 150));
     this.scene.tweens.add({
       targets: this,
-      y: this.y - 6,
+      y: this.y - 12,
       duration: 75,
       yoyo: true,
       repeat: steps
@@ -42,7 +42,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   public playAttack(onComplete?: () => void): void {
     this.scene.tweens.add({
       targets: this,
-      x: this.x - 30,
+      x: this.x - 60,
       duration: 100,
       yoyo: true,
       ease: 'Quad.easeOut',

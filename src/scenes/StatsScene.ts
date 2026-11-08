@@ -24,22 +24,22 @@ export class StatsScene extends Phaser.Scene {
     bg.setAlpha(0.3);
 
     const overlay = this.add.graphics();
-    overlay.fillStyle(0x0a0a14, 0.85);
+    overlay.fillStyle(0x0a0a14, 0.88);
     overlay.fillRect(0, 0, width, height);
 
     // 2. Title
-    this.add.text(width / 2, 25, 'PERFORMANCE STATS', {
+    this.add.text(width / 2, 45, 'PERFORMANCE STATS', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '14px',
+      fontSize: '24px',
       color: '#ffe135',
       stroke: '#b83000',
-      strokeThickness: 3
+      strokeThickness: 5
     }).setOrigin(0.5);
 
     // Overall Stats
-    this.add.text(width / 2, 50, `BEST STREAK: ${stats.bestStreak}   TOTAL DEFEATED: ${stats.totalEnemiesDefeated}`, {
+    this.add.text(width / 2, 92, `BEST STREAK: ${stats.bestStreak}   TOTAL DEFEATED: ${stats.totalEnemiesDefeated}`, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '8px',
+      fontSize: '13px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
@@ -108,29 +108,30 @@ export class StatsScene extends Phaser.Scene {
     // Column Setup
     const col1X = width * 0.25;
     const col2X = width * 0.75;
-    const startY = 85;
-    const lineH = 24;
+    const startY = 170;
+    const lineH = 46;
 
     // Needs Practice Column
-    this.add.text(col1X, 70, 'NEEDS PRACTICE', {
+    this.add.text(col1X, 136, 'NEEDS PRACTICE', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '9px',
+      fontSize: '15px',
       color: '#ff4444'
     }).setOrigin(0.5);
 
     if (needsPractice.length === 0) {
-      this.add.text(col1X, startY + 20, 'No weak areas yet!', {
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
+      this.add.text(col1X, startY + 36, 'No weak areas yet!', {
+        fontFamily: "'Fredoka', sans-serif",
+        fontSize: '18px',
         color: '#aaaaaa'
       }).setOrigin(0.5);
     } else {
       needsPractice.forEach((t, i) => {
         const pct = Math.round(t.ratio * 100);
-        const truncated = t.text.length > 25 ? t.text.substring(0, 23) + '..' : t.text;
+        const truncated = t.text.length > 34 ? t.text.substring(0, 32) + '..' : t.text;
         this.add.text(col1X, startY + (i * lineH), `${truncated}\n${pct}% (${t.correct}/${t.total})`, {
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: '7px',
+          fontFamily: "'Fredoka', 'Press Start 2P', sans-serif",
+          fontSize: '15px',
+          fontStyle: 'bold',
           color: '#ffaaaa',
           align: 'center',
           lineSpacing: 4
@@ -139,25 +140,26 @@ export class StatsScene extends Phaser.Scene {
     }
 
     // Mastered Column
-    this.add.text(col2X, 70, 'MASTERED', {
+    this.add.text(col2X, 136, 'MASTERED', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '9px',
+      fontSize: '15px',
       color: '#00ff66'
     }).setOrigin(0.5);
 
     if (mastered.length === 0) {
-      this.add.text(col2X, startY + 20, 'Keep training!', {
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
+      this.add.text(col2X, startY + 36, 'Keep training!', {
+        fontFamily: "'Fredoka', sans-serif",
+        fontSize: '18px',
         color: '#aaaaaa'
       }).setOrigin(0.5);
     } else {
       mastered.forEach((t, i) => {
         const pct = Math.round(t.ratio * 100);
-        const truncated = t.text.length > 25 ? t.text.substring(0, 23) + '..' : t.text;
+        const truncated = t.text.length > 34 ? t.text.substring(0, 32) + '..' : t.text;
         this.add.text(col2X, startY + (i * lineH), `${truncated}\n${pct}% (${t.correct}/${t.total})`, {
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: '7px',
+          fontFamily: "'Fredoka', 'Press Start 2P', sans-serif",
+          fontSize: '15px',
+          fontStyle: 'bold',
           color: '#aaffaa',
           align: 'center',
           lineSpacing: 4
@@ -166,22 +168,22 @@ export class StatsScene extends Phaser.Scene {
     }
 
     // 4. Action Buttons
-    const btnW = 140;
-    const btnH = 36;
-    const btnY = height - 30;
+    const btnW = 280;
+    const btnH = 54;
+    const btnY = height - 52;
 
     // Clear Stats Button
-    const clearContainer = this.add.container(width / 2 - 80, btnY);
+    const clearContainer = this.add.container(width / 2 - 160, btnY);
 
     const clearBg = this.add.graphics();
     clearBg.fillStyle(0x4a1818, 1);
     clearBg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-    clearBg.lineStyle(2, 0xaa4444, 1);
+    clearBg.lineStyle(3, 0xaa4444, 1);
     clearBg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
 
     const clearText = this.add.text(0, 0, 'CLEAR STATS', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '8px',
+      fontSize: '13px',
       color: '#ffaaaa'
     }).setOrigin(0.5);
 
@@ -203,29 +205,29 @@ export class StatsScene extends Phaser.Scene {
       clearBg.clear();
       clearBg.fillStyle(0x6e2828, 1);
       clearBg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-      clearBg.lineStyle(2, 0xff6666, 1);
+      clearBg.lineStyle(3, 0xff6666, 1);
       clearBg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
     });
     clearZone.on('pointerout', () => {
       clearBg.clear();
       clearBg.fillStyle(0x4a1818, 1);
       clearBg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-      clearBg.lineStyle(2, 0xaa4444, 1);
+      clearBg.lineStyle(3, 0xaa4444, 1);
       clearBg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
     });
 
     // Back Button (Main Menu)
-    const backContainer = this.add.container(width / 2 + 80, btnY);
+    const backContainer = this.add.container(width / 2 + 160, btnY);
 
     const backBg = this.add.graphics();
     backBg.fillStyle(0x282848, 1);
     backBg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-    backBg.lineStyle(2, 0x7777aa, 1);
+    backBg.lineStyle(3, 0x7777aa, 1);
     backBg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
 
     const backText = this.add.text(0, 0, 'MAIN MENU', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '8px',
+      fontSize: '13px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
@@ -246,14 +248,14 @@ export class StatsScene extends Phaser.Scene {
       backBg.clear();
       backBg.fillStyle(0x3d3d6e, 1);
       backBg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-      backBg.lineStyle(2, 0xaaaae0, 1);
+      backBg.lineStyle(3, 0xaaaae0, 1);
       backBg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
     });
     backZone.on('pointerout', () => {
       backBg.clear();
       backBg.fillStyle(0x282848, 1);
       backBg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-      backBg.lineStyle(2, 0x7777aa, 1);
+      backBg.lineStyle(3, 0x7777aa, 1);
       backBg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
     });
 

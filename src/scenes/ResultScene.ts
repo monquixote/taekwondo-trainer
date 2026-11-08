@@ -45,8 +45,8 @@ export class ResultScene extends Phaser.Scene {
     bg.fillRect(0, 0, width, height);
 
     // Decorative border
-    bg.lineStyle(2, this.passed ? 0x00ff66 : 0xff3333, 1);
-    bg.strokeRect(8, 8, width - 16, height - 16);
+    bg.lineStyle(3, this.passed ? 0x00ff66 : 0xff3333, 1);
+    bg.strokeRect(16, 16, width - 32, height - 32);
 
     // Header Title
     let titleText = 'KEEP PRACTICING!';
@@ -59,9 +59,9 @@ export class ResultScene extends Phaser.Scene {
       titleColor = '#00ff66';
     }
 
-    this.add.text(width / 2, 26, titleText, {
+    this.add.text(width / 2, 46, titleText, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '13px',
+      fontSize: '26px',
       color: titleColor
     }).setOrigin(0.5);
 
@@ -70,56 +70,57 @@ export class ResultScene extends Phaser.Scene {
       ? `${this.grade.title} (CUMULATIVE EXAM)`
       : this.grade.title;
 
-    this.add.text(width / 2, 44, gradeTitleText, {
-      fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+    this.add.text(width / 2, 82, gradeTitleText, {
+      fontFamily: "'Fredoka', 'Press Start 2P', sans-serif",
+      fontSize: '16px',
+      fontStyle: 'bold',
       color: '#ffe135'
     }).setOrigin(0.5);
 
     // Stats Bar
-    this.add.text(width / 2, 62, `SCORE: ${this.stats.score}   |   STREAK: ${this.stats.bestStreak}   |   DEFEATED: ${this.stats.totalEnemiesDefeated}`, {
+    this.add.text(width / 2, 114, `SCORE: ${this.stats.score}   |   STREAK: ${this.stats.bestStreak}   |   DEFEATED: ${this.stats.totalEnemiesDefeated}`, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '12px',
       color: '#cccccc'
     }).setOrigin(0.5);
 
     // Review Box Container
-    const boxX = 16;
-    const boxY = 76;
-    const boxW = width - 32;
-    const boxH = 138;
+    const boxX = 32;
+    const boxY = 138;
+    const boxW = width - 64;
+    const boxH = 286;
 
     const reviewBg = this.add.graphics();
-    reviewBg.fillStyle(0x101222, 0.92);
-    reviewBg.fillRoundedRect(boxX, boxY, boxW, boxH, 4);
-    reviewBg.lineStyle(1.5, this.roundMistakes.length > 0 ? 0xff4444 : 0x00ff88, 1);
-    reviewBg.strokeRoundedRect(boxX, boxY, boxW, boxH, 4);
+    reviewBg.fillStyle(0x101222, 0.94);
+    reviewBg.fillRoundedRect(boxX, boxY, boxW, boxH, 8);
+    reviewBg.lineStyle(2, this.roundMistakes.length > 0 ? 0xff4444 : 0x00ff88, 1);
+    reviewBg.strokeRoundedRect(boxX, boxY, boxW, boxH, 8);
 
     if (this.roundMistakes.length === 0) {
       // 0 Mistakes: Flawless performance!
-      this.add.text(width / 2, boxY + 36, '★ PERFECT FORM! ZERO MISTAKES! ★', {
+      this.add.text(width / 2, boxY + 70, '★ PERFECT FORM! ZERO MISTAKES! ★', {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '9px',
+        fontSize: '18px',
         color: '#ffe135'
       }).setOrigin(0.5);
 
-      this.add.text(width / 2, boxY + 68, 'All technique strikes, blocks, and theory questions', {
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
+      this.add.text(width / 2, boxY + 130, 'All technique strikes, blocks, and theory questions', {
+        fontFamily: "'Fredoka', sans-serif",
+        fontSize: '18px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
-      this.add.text(width / 2, boxY + 90, 'were executed with complete martial accuracy.', {
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
+      this.add.text(width / 2, boxY + 170, 'were executed with complete martial accuracy.', {
+        fontFamily: "'Fredoka', sans-serif",
+        fontSize: '18px',
         color: '#00ff88'
       }).setOrigin(0.5);
 
     } else {
       // Mistakes happened: End-of-Round Mistake Review
-      this.add.text(boxX + 16, boxY + 16, `MISTAKE REVIEW (${this.roundMistakes.length} MISSED THIS ROUND):`, {
+      this.add.text(boxX + 24, boxY + 28, `MISTAKE REVIEW (${this.roundMistakes.length} MISSED THIS ROUND):`, {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '8px',
+        fontSize: '14px',
         color: '#ff6666'
       }).setOrigin(0, 0.5);
 
@@ -129,35 +130,37 @@ export class ResultScene extends Phaser.Scene {
 
       for (let i = 0; i < (hasOverflow ? maxToDisplay - 1 : displayCount); i++) {
         const m = this.roundMistakes[i];
-        const rowY = boxY + 38 + i * 22;
+        const rowY = boxY + 74 + i * 46;
 
         // Truncate prompt if long
         const promptRaw = m.prompt;
-        const promptDisplay = promptRaw.length > 20 ? promptRaw.substring(0, 18) + '..' : promptRaw;
+        const promptDisplay = promptRaw.length > 28 ? promptRaw.substring(0, 26) + '..' : promptRaw;
 
         // Truncate answer if long
         const answerRaw = m.correctAnswer;
-        const answerDisplay = answerRaw.length > 22 ? answerRaw.substring(0, 20) + '..' : answerRaw;
+        const answerDisplay = answerRaw.length > 28 ? answerRaw.substring(0, 26) + '..' : answerRaw;
 
         // Question Prompt (Left)
-        this.add.text(boxX + 16, rowY, `✗ ${promptDisplay}`, {
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: '7px',
+        this.add.text(boxX + 28, rowY, `✗ ${promptDisplay}`, {
+          fontFamily: "'Fredoka', 'Press Start 2P', sans-serif",
+          fontSize: '16px',
+          fontStyle: 'bold',
           color: '#ffffff'
         }).setOrigin(0, 0.5);
 
         // Correct Answer (Center)
-        this.add.text(boxX + 190, rowY, `➔ ${answerDisplay}`, {
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: '7px',
+        this.add.text(boxX + 380, rowY, `➔ ${answerDisplay}`, {
+          fontFamily: "'Fredoka', 'Press Start 2P', sans-serif",
+          fontSize: '16px',
+          fontStyle: 'bold',
           color: '#00ff88'
         }).setOrigin(0, 0.5);
 
         // Clickable Korean pronunciation button for this mistake
         const koreanTerm = m.term?.korean || (m.type === 'technique' ? m.correctAnswer : null);
         if (koreanTerm) {
-          const speaker = this.add.text(boxX + boxW - 18, rowY, '🔊', {
-            fontSize: '11px'
+          const speaker = this.add.text(boxX + boxW - 36, rowY, '🔊', {
+            fontSize: '22px'
           }).setOrigin(0.5, 0.5).setInteractive({ useHandCursor: true });
 
           speaker.on('pointerdown', () => {
@@ -177,25 +180,25 @@ export class ResultScene extends Phaser.Scene {
 
       if (hasOverflow) {
         const remaining = this.roundMistakes.length - (maxToDisplay - 1);
-        this.add.text(boxX + 16, boxY + 38 + (maxToDisplay - 1) * 22, `... and ${remaining} more missed item(s).`, {
+        this.add.text(boxX + 28, boxY + 74 + (maxToDisplay - 1) * 46, `... and ${remaining} more missed item(s).`, {
           fontFamily: "'Press Start 2P', monospace",
-          fontSize: '7px',
+          fontSize: '12px',
           color: '#aaaaaa'
         }).setOrigin(0, 0.5);
       }
 
       // Review tip at bottom of box
-      this.add.text(width / 2, boxY + boxH - 12, '💡 Click 🔊 to hear pronunciation | RETRY MISSED to drill!', {
+      this.add.text(width / 2, boxY + boxH - 22, '💡 Click 🔊 to hear pronunciation | RETRY MISSED to drill!', {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '6px',
+        fontSize: '11px',
         color: '#ffbb44'
       }).setOrigin(0.5);
     }
 
     // Action Buttons
     let isTransitioning = false;
-    const btnY = height - 28;
-    const btnH = 28;
+    const btnY = height - 52;
+    const btnH = 52;
 
     const handleFullRetry = () => {
       if (isTransitioning) return;
@@ -236,20 +239,20 @@ export class ResultScene extends Phaser.Scene {
 
     if (this.roundMistakes.length > 0) {
       // 3 Buttons Layout: [RETRY MISSED] [FULL ROUND] [MAIN MENU]
-      const btnW = 136;
+      const btnW = 270;
 
       // 1. Retry Missed (Priority CTA)
-      const btn1X = width / 2 - 145;
+      const btn1X = width / 2 - 290;
       const btn1Container = this.add.container(btn1X, btnY);
       const btn1Bg = this.add.graphics();
       btn1Bg.fillStyle(0x7a3a00, 1);
       btn1Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-      btn1Bg.lineStyle(1.5, 0xff9900, 1);
+      btn1Bg.lineStyle(2, 0xff9900, 1);
       btn1Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
 
       const btn1Text = this.add.text(0, 0, `RETRY MISSED (${this.roundMistakes.length})`, {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
+        fontSize: '11px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
@@ -260,14 +263,14 @@ export class ResultScene extends Phaser.Scene {
         btn1Bg.clear();
         btn1Bg.fillStyle(0xa65000, 1);
         btn1Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-        btn1Bg.lineStyle(1.5, 0xffbb33, 1);
+        btn1Bg.lineStyle(2, 0xffbb33, 1);
         btn1Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
       });
       btn1Zone.on('pointerout', () => {
         btn1Bg.clear();
         btn1Bg.fillStyle(0x7a3a00, 1);
         btn1Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-        btn1Bg.lineStyle(1.5, 0xff9900, 1);
+        btn1Bg.lineStyle(2, 0xff9900, 1);
         btn1Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
       });
 
@@ -277,12 +280,12 @@ export class ResultScene extends Phaser.Scene {
       const btn2Bg = this.add.graphics();
       btn2Bg.fillStyle(0x0e7e3e, 1);
       btn2Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-      btn2Bg.lineStyle(1.5, 0x00ff66, 1);
+      btn2Bg.lineStyle(2, 0x00ff66, 1);
       btn2Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
 
       const btn2Text = this.add.text(0, 0, 'FULL ROUND', {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
+        fontSize: '11px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
@@ -293,29 +296,29 @@ export class ResultScene extends Phaser.Scene {
         btn2Bg.clear();
         btn2Bg.fillStyle(0x189e52, 1);
         btn2Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-        btn2Bg.lineStyle(1.5, 0x55ff99, 1);
+        btn2Bg.lineStyle(2, 0x55ff99, 1);
         btn2Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
       });
       btn2Zone.on('pointerout', () => {
         btn2Bg.clear();
         btn2Bg.fillStyle(0x0e7e3e, 1);
         btn2Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-        btn2Bg.lineStyle(1.5, 0x00ff66, 1);
+        btn2Bg.lineStyle(2, 0x00ff66, 1);
         btn2Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
       });
 
       // 3. Main Menu
-      const btn3X = width / 2 + 145;
+      const btn3X = width / 2 + 290;
       const btn3Container = this.add.container(btn3X, btnY);
       const btn3Bg = this.add.graphics();
       btn3Bg.fillStyle(0x282848, 1);
       btn3Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-      btn3Bg.lineStyle(1.5, 0x7777aa, 1);
+      btn3Bg.lineStyle(2, 0x7777aa, 1);
       btn3Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
 
       const btn3Text = this.add.text(0, 0, 'MAIN MENU', {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '7px',
+        fontSize: '11px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
@@ -326,33 +329,33 @@ export class ResultScene extends Phaser.Scene {
         btn3Bg.clear();
         btn3Bg.fillStyle(0x3d3d6e, 1);
         btn3Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-        btn3Bg.lineStyle(1.5, 0xaaaae0, 1);
+        btn3Bg.lineStyle(2, 0xaaaae0, 1);
         btn3Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
       });
       btn3Zone.on('pointerout', () => {
         btn3Bg.clear();
         btn3Bg.fillStyle(0x282848, 1);
         btn3Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-        btn3Bg.lineStyle(1.5, 0x7777aa, 1);
+        btn3Bg.lineStyle(2, 0x7777aa, 1);
         btn3Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
       });
 
     } else {
       // 2 Buttons Layout: [PLAY AGAIN] [MAIN MENU]
-      const btnW = 160;
+      const btnW = 280;
 
       // 1. Play Again
-      const btn1X = width / 2 - 95;
+      const btn1X = width / 2 - 160;
       const btn1Container = this.add.container(btn1X, btnY);
       const btn1Bg = this.add.graphics();
       btn1Bg.fillStyle(0x0e7e3e, 1);
       btn1Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-      btn1Bg.lineStyle(2, 0x00ff66, 1);
+      btn1Bg.lineStyle(3, 0x00ff66, 1);
       btn1Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
 
       const btn1Text = this.add.text(0, 0, 'PLAY AGAIN', {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '8px',
+        fontSize: '15px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
@@ -363,29 +366,29 @@ export class ResultScene extends Phaser.Scene {
         btn1Bg.clear();
         btn1Bg.fillStyle(0x189e52, 1);
         btn1Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-        btn1Bg.lineStyle(2, 0x55ff99, 1);
+        btn1Bg.lineStyle(3, 0x55ff99, 1);
         btn1Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
       });
       btn1Zone.on('pointerout', () => {
         btn1Bg.clear();
         btn1Bg.fillStyle(0x0e7e3e, 1);
         btn1Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-        btn1Bg.lineStyle(2, 0x00ff66, 1);
+        btn1Bg.lineStyle(3, 0x00ff66, 1);
         btn1Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
       });
 
       // 2. Main Menu
-      const btn2X = width / 2 + 95;
+      const btn2X = width / 2 + 160;
       const btn2Container = this.add.container(btn2X, btnY);
       const btn2Bg = this.add.graphics();
       btn2Bg.fillStyle(0x282848, 1);
       btn2Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-      btn2Bg.lineStyle(2, 0x7777aa, 1);
+      btn2Bg.lineStyle(3, 0x7777aa, 1);
       btn2Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
 
       const btn2Text = this.add.text(0, 0, 'MAIN MENU', {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '8px',
+        fontSize: '15px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
@@ -396,14 +399,14 @@ export class ResultScene extends Phaser.Scene {
         btn2Bg.clear();
         btn2Bg.fillStyle(0x3d3d6e, 1);
         btn2Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-        btn2Bg.lineStyle(2, 0xaaaae0, 1);
+        btn2Bg.lineStyle(3, 0xaaaae0, 1);
         btn2Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
       });
       btn2Zone.on('pointerout', () => {
         btn2Bg.clear();
         btn2Bg.fillStyle(0x282848, 1);
         btn2Bg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
-        btn2Bg.lineStyle(2, 0x7777aa, 1);
+        btn2Bg.lineStyle(3, 0x7777aa, 1);
         btn2Bg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
       });
     }

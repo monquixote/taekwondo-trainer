@@ -137,22 +137,22 @@ export class PlayScene extends Phaser.Scene {
 
     // 1. Scrolling Parallax Dojang Background
     const bgKey = this.isHardMode ? 'dojang_bg_hard' : 'dojang_bg';
-    this.bgTile = this.add.tileSprite(width / 2, height / 2 - 35, width, height - 70, bgKey);
-    this.bgTile.setDisplaySize(width, height - 70);
+    this.bgTile = this.add.tileSprite(width / 2, (height - 165) / 2, width, height - 165, bgKey);
+    this.bgTile.setDisplaySize(width, height - 165);
 
     // Bottom arcade panel background for ActionDeck
     const deckBg = this.add.graphics();
     deckBg.fillStyle(0x0c0d18, 1);
-    deckBg.fillRect(0, height - 100, width, 100);
-    deckBg.lineStyle(2, 0x4a4a70, 1);
-    deckBg.lineBetween(0, height - 100, width, height - 100);
+    deckBg.fillRect(0, height - 165, width, 165);
+    deckBg.lineStyle(3, 0x4a4a70, 1);
+    deckBg.lineBetween(0, height - 165, width, height - 165);
 
     // 2. Player with grade-specific belt
-    const groundY = height - 108;
-    this.player = new Player(this, 90, groundY, this.grade.id);
+    const groundY = height - 176;
+    this.player = new Player(this, 180, groundY, this.grade.id);
 
     // 3. Action Deck (Choices UI)
-    this.actionDeck = new ActionDeck(this, width / 2, height - 52);
+    this.actionDeck = new ActionDeck(this, width / 2, height - 82);
 
     // 4. HUD Header
     this.createHUD(width);
@@ -181,41 +181,41 @@ export class PlayScene extends Phaser.Scene {
     // Top HUD bar background
     const hudBar = this.add.graphics();
     hudBar.fillStyle(0x000000, 0.75);
-    hudBar.fillRect(0, 0, width, 20);
+    hudBar.fillRect(0, 0, width, 36);
     hudBar.setDepth(60);
 
     // Health Hearts
     for (let i = 0; i < this.stats.maxHealth; i++) {
-      const heart = this.add.image(14 + i * 14, 10, 'heart');
-      heart.setScale(0.9);
+      const heart = this.add.image(32 + i * 40, 18, 'heart');
+      heart.setScale(0.85);
       heart.setDepth(61);
       this.hearts.push(heart);
     }
     this.updateHearts();
 
     // Score & Streak in center
-    this.scoreText = this.add.text(width / 2 - 55, 10, `SCORE: ${this.stats.score}`, {
+    this.scoreText = this.add.text(width / 2 - 110, 18, `SCORE: ${this.stats.score}`, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '13px',
       color: '#ffffff'
     }).setOrigin(0.5, 0.5).setDepth(61);
 
-    this.streakText = this.add.text(width / 2 + 55, 10, 'STREAK: 0', {
+    this.streakText = this.add.text(width / 2 + 110, 18, 'STREAK: 0', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '13px',
       color: '#ffe135'
     }).setOrigin(0.5, 0.5).setDepth(61);
 
     // Progress counter (positioned with spacing before action buttons)
-    this.progressText = this.add.text(width - 52, 10, `TEST: 1/${this.totalEncounters}`, {
+    this.progressText = this.add.text(width - 110, 18, `TEST: 1/${this.totalEncounters}`, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '13px',
       color: '#00ffaa'
     }).setOrigin(1, 0.5).setDepth(61);
 
     // Quit to menu button (next to audio mute button)
-    const quitBtn = this.add.text(width - 32, 10, '🚪', {
-      fontSize: '11px'
+    const quitBtn = this.add.text(width - 64, 18, '🚪', {
+      fontSize: '22px'
     }).setOrigin(0.5, 0.5).setDepth(61).setInteractive({ useHandCursor: true });
     quitBtn.on('pointerdown', () => {
       this.quitToMenu();
@@ -224,8 +224,8 @@ export class PlayScene extends Phaser.Scene {
     quitBtn.on('pointerout', () => quitBtn.setScale(1.0));
 
     // Sound toggle
-    const soundBtn = this.add.text(width - 12, 10, soundFx.isEnabled() ? '🔊' : '🔇', {
-      fontSize: '11px'
+    const soundBtn = this.add.text(width - 24, 18, soundFx.isEnabled() ? '🔊' : '🔇', {
+      fontSize: '22px'
     }).setOrigin(0.5, 0.5).setDepth(61).setInteractive({ useHandCursor: true });
     soundBtn.on('pointerdown', () => {
       const enabled = soundFx.toggleSound();
@@ -246,38 +246,39 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private createPromptBanner(width: number): void {
-    // Positioned at Y = 38 (leaves clear gap above player/enemy heads at Y ≈ 98)
-    this.promptBanner = this.add.container(width / 2, 38);
+    // Positioned at Y = 85 (leaves clear gap above player/enemy heads)
+    this.promptBanner = this.add.container(width / 2, 85);
     this.promptBanner.setDepth(50);
 
-    const bannerW = 464;
-    const bannerH = 42;
+    const bannerW = 860;
+    const bannerH = 76;
 
     const bannerBg = this.add.graphics();
     bannerBg.fillStyle(0x000000, 0.92);
-    bannerBg.fillRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 4);
-    bannerBg.lineStyle(1.5, 0xffe135, 1);
-    bannerBg.strokeRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 4);
+    bannerBg.fillRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 8);
+    bannerBg.lineStyle(2, 0xffe135, 1);
+    bannerBg.strokeRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 8);
 
     // Row 1: Dedicated centered category badge
-    this.categoryBadgeText = this.add.text(0, -11, '', {
+    this.categoryBadgeText = this.add.text(0, -18, '', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '12px',
       color: '#ffe135'
     }).setOrigin(0.5, 0.5);
 
     // Row 2: Dedicated centered question text
-    this.promptText = this.add.text(0, 6, '', {
-      fontFamily: "'Press Start 2P', monospace",
-      fontSize: '8px',
+    this.promptText = this.add.text(0, 14, '', {
+      fontFamily: "'Fredoka', 'Press Start 2P', sans-serif",
+      fontSize: '24px',
+      fontStyle: 'bold',
       color: '#ffffff',
       align: 'center',
-      wordWrap: { width: 440 }
+      wordWrap: { width: 800 }
     }).setOrigin(0.5, 0.5);
 
     // Audio button in the prompt banner (visible when prompt contains Korean to speak)
-    this.promptAudioBtn = this.add.text(bannerW / 2 - 20, 0, '🔊', {
-      fontSize: '13px'
+    this.promptAudioBtn = this.add.text(bannerW / 2 - 36, 0, '🔊', {
+      fontSize: '24px'
     }).setOrigin(0.5, 0.5).setInteractive({ useHandCursor: true });
     this.promptAudioBtn.on('pointerdown', () => this.speakCurrentPrompt());
     this.promptAudioBtn.on('pointerover', () => this.promptAudioBtn.setScale(1.2));
@@ -347,7 +348,7 @@ export class PlayScene extends Phaser.Scene {
 
   private spawnEnemy(): void {
     const { width, height } = this.scale;
-    const groundY = height - 108;
+    const groundY = height - 176;
 
     let enemyType: EnemyType = 'enemy_purple';
     if (this.isTheoryEncounter) {
@@ -360,13 +361,13 @@ export class PlayScene extends Phaser.Scene {
       this.currentEnemy.destroy();
     }
 
-    this.currentEnemy = new Enemy(this, width + 30, groundY, enemyType);
+    this.currentEnemy = new Enemy(this, width + 50, groundY, enemyType);
     if (this.isHardMode) {
       this.currentEnemy.setTint(0xff6666);
     }
 
     // Enemy approaches and halts at striking distance
-    const stopDistance = this.isTheoryEncounter ? this.player.x + 110 : this.player.x + 80;
+    const stopDistance = this.isTheoryEncounter ? this.player.x + 220 : this.player.x + 160;
     const walkDuration = this.isHardMode ? 400 : 600;
     this.currentEnemy.walkTo(stopDistance, walkDuration, () => {
       this.presentQuestion();
@@ -754,17 +755,17 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private showScoreFloater(text: string): void {
-    const floater = this.add.text(this.player.x + 50, this.player.y - 70, text, {
+    const floater = this.add.text(this.player.x + 80, this.player.y - 120, text, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '10px',
+      fontSize: '15px',
       color: '#00ff66',
       stroke: '#000',
-      strokeThickness: 3
+      strokeThickness: 4
     }).setOrigin(0.5);
 
     this.tweens.add({
       targets: floater,
-      y: floater.y - 30,
+      y: floater.y - 50,
       alpha: 0,
       duration: 600,
       onComplete: () => floater.destroy()

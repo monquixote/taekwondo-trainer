@@ -56,76 +56,86 @@ export class MenuScene extends Phaser.Scene {
     overlay.fillRect(0, 0, width, height);
 
     // 2. Title Banner (Unobstructed at top center)
-    const titleText = this.add.text(width / 2, 38, 'TAE KWON-DO TRAINER', {
+    const titleText = this.add.text(width / 2, 56, 'TAE KWON-DO TRAINER', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '19px',
+      fontSize: '32px',
       color: '#ffe135',
       stroke: '#b83000',
-      strokeThickness: 4
+      strokeThickness: 6
+    }).setOrigin(0.5);
+
+    this.add.text(width / 2, 98, 'TAGB MARTIAL ARTS THEORY & STRIKES', {
+      fontFamily: "'Fredoka', 'Press Start 2P', sans-serif",
+      fontSize: '18px',
+      fontStyle: 'bold',
+      color: '#38bdf8',
+      stroke: '#000000',
+      strokeThickness: 3
     }).setOrigin(0.5);
 
     // 3. Characters Flanking (Player on far left, Enemy on far right - completely clear of title!)
-    const groundY = 158;
+    const groundY = 320;
     const initialGrade = ALL_GRADES[this.selectedGradeIndex] || ALL_GRADES[0];
-    this.playerPreview = this.add.image(54, groundY, `player_idle_${initialGrade.id}`);
+    this.playerPreview = this.add.image(90, groundY, `player_idle_${initialGrade.id}`);
     this.playerPreview.setOrigin(0.5, 1);
-    this.playerPreview.setScale(1.35);
+    this.playerPreview.setScale(2.5);
 
-    this.add.text(54, groundY + 10, 'PLAYER', {
+    this.add.text(90, groundY + 16, 'PLAYER', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '11px',
       color: '#ffe135',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setOrigin(0.5, 0.5);
 
-    const enemyPreview = this.add.image(width - 54, groundY, 'enemy_purple');
+    const enemyPreview = this.add.image(width - 90, groundY, 'enemy_purple');
     enemyPreview.setOrigin(0.5, 1);
-    enemyPreview.setScale(1.35);
+    enemyPreview.setScale(2.5);
 
-    this.add.text(width - 54, groundY + 10, 'OPPONENT', {
+    this.add.text(width - 90, groundY + 16, 'OPPONENT', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '11px',
       color: '#ff4444',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setOrigin(0.5, 0.5);
 
     // 4. Grade Selector in a Dedicated Center Arcade Box
-    const boxY = 126;
-    const boxW = 280;
-    const boxH = 58;
+    const boxY = 226;
+    const boxW = 600;
+    const boxH = 130;
 
     const selectorBox = this.add.graphics();
     selectorBox.fillStyle(0x0a0c18, 0.95);
-    selectorBox.fillRoundedRect(width / 2 - boxW / 2, boxY - boxH / 2, boxW, boxH, 4);
-    selectorBox.lineStyle(1.5, 0xffe135, 1);
-    selectorBox.strokeRoundedRect(width / 2 - boxW / 2, boxY - boxH / 2, boxW, boxH, 4);
+    selectorBox.fillRoundedRect(width / 2 - boxW / 2, boxY - boxH / 2, boxW, boxH, 8);
+    selectorBox.lineStyle(2, 0xffe135, 1);
+    selectorBox.strokeRoundedRect(width / 2 - boxW / 2, boxY - boxH / 2, boxW, boxH, 8);
 
-    this.add.text(width / 2, boxY - 17, '◆ SELECT GRADE ◆', {
+    this.add.text(width / 2, boxY - 38, '◆ SELECT GRADE ◆', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '12px',
       color: '#ffe135'
     }).setOrigin(0.5);
 
     this.gradeText = this.add.text(width / 2, boxY, '', {
-      fontFamily: "'Press Start 2P', monospace",
-      fontSize: '8px',
+      fontFamily: "'Fredoka', 'Press Start 2P', sans-serif",
+      fontSize: '22px',
+      fontStyle: 'bold',
       color: '#ffffff',
       align: 'center',
-      wordWrap: { width: 220 }
+      wordWrap: { width: 480 }
     }).setOrigin(0.5);
 
     // Left/Right Arrow buttons for selecting grade
-    const leftArrow = this.add.text(width / 2 - boxW / 2 + 16, boxY, '◀', {
+    const leftArrow = this.add.text(width / 2 - boxW / 2 + 30, boxY, '◀', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '13px',
+      fontSize: '24px',
       color: '#ffe135'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    const rightArrow = this.add.text(width / 2 + boxW / 2 - 16, boxY, '▶', {
+    const rightArrow = this.add.text(width / 2 + boxW / 2 - 30, boxY, '▶', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '13px',
+      fontSize: '24px',
       color: '#ffe135'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -136,9 +146,9 @@ export class MenuScene extends Phaser.Scene {
     this.updateGradeDisplay();
 
     // 5. High Scores / Stats Summary
-    this.add.text(width / 2, 180, `BEST STREAK: ${stats.bestStreak}  |  DEFEATED: ${stats.totalEnemiesDefeated}`, {
+    this.add.text(width / 2, 338, `BEST STREAK: ${stats.bestStreak}  |  DEFEATED: ${stats.totalEnemiesDefeated}`, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '12px',
       color: '#00ff88'
     }).setOrigin(0.5);
 
@@ -150,17 +160,21 @@ export class MenuScene extends Phaser.Scene {
     let isCumulativeExam = localStorage.getItem('tagb_cumulative_exam') === 'true';
     let isRunnerMode = localStorage.getItem('tagb_game_mode') === 'runner';
 
+    const btnY = 415;
+    const btnW = 280;
+    const btnH = 60;
+
     // Start Button Container
-    const startContainer = this.add.container(width / 2 - 80, 222);
+    const startContainer = this.add.container(width / 2 - 160, btnY);
     
     const startBg = this.add.graphics();
     const startText = this.add.text(0, 0, isRunnerMode ? 'START RUNNER' : 'START GAME', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '8px',
+      fontSize: '15px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    const startZone = this.add.zone(0, 0, 140, 32).setInteractive({ useHandCursor: true });
+    const startZone = this.add.zone(0, 0, btnW, btnH).setInteractive({ useHandCursor: true });
     startContainer.add([startBg, startText, startZone]);
 
     const updateStartButton = (hover: boolean = false) => {
@@ -168,33 +182,33 @@ export class MenuScene extends Phaser.Scene {
       if (isHardMode) {
         if (hover) {
           startBg.fillStyle(0x991111, 1);
-          startBg.lineStyle(2, 0xff5555, 1);
+          startBg.lineStyle(3, 0xff5555, 1);
         } else {
           startBg.fillStyle(0x770a0a, 1);
-          startBg.lineStyle(2, 0xff0000, 1);
+          startBg.lineStyle(3, 0xff0000, 1);
         }
       } else {
         if (hover) {
           startBg.fillStyle(0x189e52, 1);
-          startBg.lineStyle(2, 0x55ff99, 1);
+          startBg.lineStyle(3, 0x55ff99, 1);
         } else {
           startBg.fillStyle(0x0e7e3e, 1);
-          startBg.lineStyle(2, 0x00ff66, 1);
+          startBg.lineStyle(3, 0x00ff66, 1);
         }
       }
-      startBg.fillRect(-70, -16, 140, 32);
-      startBg.strokeRect(-70, -16, 140, 32);
+      startBg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
+      startBg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
     };
     updateStartButton(false);
 
     const updateTitleTheme = () => {
       if (isHardMode) {
         titleText.setColor('#ff3333');
-        titleText.setStroke('#660000', 4);
+        titleText.setStroke('#660000', 6);
         bg.setTexture('dojang_bg_hard');
       } else {
         titleText.setColor('#ffe135');
-        titleText.setStroke('#b83000', 4);
+        titleText.setStroke('#b83000', 6);
         bg.setTexture('dojang_bg');
       }
     };
@@ -203,7 +217,7 @@ export class MenuScene extends Phaser.Scene {
     // Blink tween for Start Game
     this.tweens.add({
       targets: startText,
-      alpha: 0.3,
+      alpha: 0.35,
       duration: 500,
       yoyo: true,
       repeat: -1
@@ -227,21 +241,21 @@ export class MenuScene extends Phaser.Scene {
     startZone.on('pointerout', () => updateStartButton(false));
 
     // Stats Button Container
-    const statsContainer = this.add.container(width / 2 + 80, 222);
+    const statsContainer = this.add.container(width / 2 + 160, btnY);
     
     const statsBg = this.add.graphics();
     statsBg.fillStyle(0x282848, 1);
-    statsBg.fillRect(-70, -16, 140, 32);
-    statsBg.lineStyle(2, 0x7777aa, 1);
-    statsBg.strokeRect(-70, -16, 140, 32);
+    statsBg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
+    statsBg.lineStyle(3, 0x7777aa, 1);
+    statsBg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
 
     const statsText = this.add.text(0, 0, 'VIEW STATS', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '8px',
+      fontSize: '15px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    const statsZone = this.add.zone(0, 0, 140, 32).setInteractive({ useHandCursor: true });
+    const statsZone = this.add.zone(0, 0, btnW, btnH).setInteractive({ useHandCursor: true });
     statsContainer.add([statsBg, statsText, statsZone]);
 
     const viewStats = () => {
@@ -257,16 +271,16 @@ export class MenuScene extends Phaser.Scene {
     statsZone.on('pointerover', () => {
       statsBg.clear();
       statsBg.fillStyle(0x3d3d6e, 1);
-      statsBg.fillRect(-70, -16, 140, 32);
-      statsBg.lineStyle(2, 0xaaaae0, 1);
-      statsBg.strokeRect(-70, -16, 140, 32);
+      statsBg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
+      statsBg.lineStyle(3, 0xaaaae0, 1);
+      statsBg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
     });
     statsZone.on('pointerout', () => {
       statsBg.clear();
       statsBg.fillStyle(0x282848, 1);
-      statsBg.fillRect(-70, -16, 140, 32);
-      statsBg.lineStyle(2, 0x7777aa, 1);
-      statsBg.strokeRect(-70, -16, 140, 32);
+      statsBg.fillRect(-btnW / 2, -btnH / 2, btnW, btnH);
+      statsBg.lineStyle(3, 0x7777aa, 1);
+      statsBg.strokeRect(-btnW / 2, -btnH / 2, btnW, btnH);
     });
 
     // Mode Toggles (Hard Mode, Game Style & Cumulative Exam)
@@ -301,25 +315,26 @@ export class MenuScene extends Phaser.Scene {
       soundFx.playSelect();
     };
 
-    const hardModeToggle = this.add.text(72, 255, `HARD: ${isHardMode ? 'ON' : 'OFF'}`, {
+    const toggleY = 495;
+    const hardModeToggle = this.add.text(140, toggleY, `HARD: ${isHardMode ? 'ON' : 'OFF'}`, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '12px',
       color: isHardMode ? '#ff4444' : '#888888'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     hardModeToggle.on('pointerdown', toggleHardMode);
 
-    const runnerToggle = this.add.text(width / 2 - 8, 255, `MODE: ${isRunnerMode ? '3D RUNNER' : 'CLASSIC'}`, {
+    const runnerToggle = this.add.text(width / 2, toggleY, `MODE: ${isRunnerMode ? '3D RUNNER' : 'CLASSIC'}`, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '12px',
       color: isRunnerMode ? '#38bdf8' : '#ffe135'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     runnerToggle.on('pointerdown', toggleRunnerMode);
 
-    const examToggle = this.add.text(width - 92, 255, `EXAM: ${isCumulativeExam ? 'ALL BELTS' : 'THIS BELT'}`, {
+    const examToggle = this.add.text(width - 160, toggleY, `EXAM: ${isCumulativeExam ? 'ALL BELTS' : 'THIS BELT'}`, {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '12px',
       color: isCumulativeExam ? '#00ffaa' : '#888888'
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -341,8 +356,8 @@ export class MenuScene extends Phaser.Scene {
     }
 
     // 7. Voice Configuration & Sound Toggle buttons in top right
-    const soundToggle = this.add.text(width - 15, 12, soundFx.isEnabled() ? '🔊' : '🔇', {
-      fontSize: '12px'
+    const soundToggle = this.add.text(width - 30, 24, soundFx.isEnabled() ? '🔊' : '🔇', {
+      fontSize: '22px'
     }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
     soundToggle.on('pointerdown', () => {
@@ -350,9 +365,9 @@ export class MenuScene extends Phaser.Scene {
       soundToggle.setText(enabled ? '🔊' : '🔇');
     });
 
-    const voiceBtn = this.add.text(width - 44, 12, '⚙️ VOICE', {
+    const voiceBtn = this.add.text(width - 75, 27, '⚙️ VOICE', {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '7px',
+      fontSize: '12px',
       color: '#ffe135'
     }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
@@ -385,21 +400,21 @@ export class MenuScene extends Phaser.Scene {
 
     // Draw little belt preview inside the selector box
     this.beltIconGraphics.clear();
-    const bx = this.scale.width / 2 - 35;
-    const by = 138;
+    const bx = this.scale.width / 2 - 70;
+    const by = 250;
 
     // Belt color
     const colorInt = parseInt(grade.beltColor.replace('#', '0x'), 16);
     this.beltIconGraphics.fillStyle(colorInt, 1);
-    this.beltIconGraphics.fillRect(bx, by, 70, 6);
-    this.beltIconGraphics.lineStyle(1, 0x222222, 1);
-    this.beltIconGraphics.strokeRect(bx, by, 70, 6);
+    this.beltIconGraphics.fillRect(bx, by, 140, 12);
+    this.beltIconGraphics.lineStyle(2, 0x222222, 1);
+    this.beltIconGraphics.strokeRect(bx, by, 140, 12);
 
     // Stripe
     if (grade.stripeColor) {
       const stripeInt = parseInt(grade.stripeColor.replace('#', '0x'), 16);
       this.beltIconGraphics.fillStyle(stripeInt, 1);
-      this.beltIconGraphics.fillRect(bx + 48, by, 8, 6);
+      this.beltIconGraphics.fillRect(bx + 96, by, 16, 12);
     }
   }
 }

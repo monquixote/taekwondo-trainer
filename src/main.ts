@@ -10,16 +10,16 @@ import { VoiceConfigScene } from './scenes/VoiceConfigScene';
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game-container',
-  width: 480,
-  height: 270,
+  width: 960,
+  height: 540,
   pixelArt: true,
   roundPixels: true,
   backgroundColor: '#0b0b0f',
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 480,
-    height: 270
+    width: 960,
+    height: 540
   },
   physics: {
     default: 'arcade',
@@ -49,7 +49,7 @@ function resizeApp() {
 window.addEventListener('resize', resizeApp);
 window.addEventListener('orientationchange', () => {
   setTimeout(resizeApp, 100);
-  setTimeout(resizeApp, 300); // Safari sometimes takes a moment to update window.innerHeight
+  setTimeout(resizeApp, 300);
 });
 
 // Initial resize

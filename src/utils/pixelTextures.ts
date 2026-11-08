@@ -415,8 +415,8 @@ export function createPixelArtTextures(scene: Phaser.Scene): void {
     ctx.fillRect(7, 7, 2, 2);
   });
 
-  // 9. Retro Dojang Corridor Background (Floor & Pillars)
-  createFromGrid('dojang_bg', 240, 135, 2, (ctx) => {
+  // 9. Retro Dojang Corridor Background (Floor & Pillars) - Scaled 4x for 960x540
+  createFromGrid('dojang_bg', 240, 135, 4, (ctx) => {
     // Wall (Traditional Japanese/Korean wooden interior)
     ctx.fillStyle = '#5c3a21'; // Dark rich wood
     ctx.fillRect(0, 0, 240, 95);
@@ -467,7 +467,7 @@ export function createPixelArtTextures(scene: Phaser.Scene): void {
     }
   });
 
-  createFromGrid('dojang_bg_hard', 240, 135, 2, (ctx) => {
+  createFromGrid('dojang_bg_hard', 240, 135, 4, (ctx) => {
     // Wall (subtly tinted darker/redder wood)
     ctx.fillStyle = '#4c2a1a';
     ctx.fillRect(0, 0, 240, 95);
@@ -518,8 +518,8 @@ export function createPixelArtTextures(scene: Phaser.Scene): void {
     }
   });
 
-  // 10. Heart Icon for Player Health
-  createFromGrid('heart', 12, 12, 2, (ctx) => {
+  // 10. Heart Icon for Player Health (Scaled 4x for 960x540)
+  const renderHeartFull = (ctx: CanvasRenderingContext2D) => {
     ctx.fillStyle = '#ff2a2a';
     ctx.fillRect(2, 2, 3, 3);
     ctx.fillRect(7, 2, 3, 3);
@@ -532,10 +532,12 @@ export function createPixelArtTextures(scene: Phaser.Scene): void {
     // White shine
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(2, 3, 1, 2);
-  });
+  };
+  createFromGrid('heart', 12, 12, 4, renderHeartFull);
+  createFromGrid('heart_full', 12, 12, 4, renderHeartFull);
 
   // 11. Empty Heart Icon
-  createFromGrid('heart_empty', 12, 12, 2, (ctx) => {
+  createFromGrid('heart_empty', 12, 12, 4, (ctx) => {
     ctx.fillStyle = '#555';
     ctx.fillRect(2, 2, 3, 1);
     ctx.fillRect(7, 2, 3, 1);

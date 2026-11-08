@@ -48,10 +48,10 @@ export class ActionDeck extends Phaser.GameObjects.Container {
     this.isLocked = false;
 
     // 2x2 Layout or 4 rows depending on layout
-    const btnWidth = 224;
-    const btnHeight = 44;
-    const gapX = 14;
-    const gapY = 8;
+    const btnWidth = 440;
+    const btnHeight = 66;
+    const gapX = 24;
+    const gapY = 12;
 
     options.forEach((opt, idx) => {
       // 2 columns, 2 rows
@@ -69,22 +69,23 @@ export class ActionDeck extends Phaser.GameObjects.Container {
       // Hotkey badge [1], [2], etc.
       const hotkeyBadge = this.scene.add.graphics();
       hotkeyBadge.fillStyle(0xf8d820, 1);
-      hotkeyBadge.fillRoundedRect(-btnWidth / 2 + 6, -btnHeight / 2 + 8, 26, 26, 3);
+      hotkeyBadge.fillRoundedRect(-btnWidth / 2 + 10, -btnHeight / 2 + 10, 44, 46, 6);
 
-      const hotkeyText = this.scene.add.text(-btnWidth / 2 + 19, -btnHeight / 2 + 21, `${idx + 1}`, {
+      const hotkeyText = this.scene.add.text(-btnWidth / 2 + 32, 0, `${idx + 1}`, {
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '11px',
+        fontSize: '16px',
         color: '#111'
       }).setOrigin(0.5);
 
       // Korean Move Text (wrap if needed)
       // Auto-scale font size if text is long
-      const fontSize = opt.label.length > 25 ? '8px' : (opt.label.length > 18 ? '9px' : '10px');
-      const labelText = this.scene.add.text(-btnWidth / 2 + 38, 0, opt.label, {
-        fontFamily: "'Press Start 2P', monospace",
+      const fontSize = opt.label.length > 30 ? '16px' : (opt.label.length > 20 ? '18px' : '20px');
+      const labelText = this.scene.add.text(-btnWidth / 2 + 64, 0, opt.label, {
+        fontFamily: "'Fredoka', 'Press Start 2P', sans-serif",
         fontSize: fontSize,
+        fontStyle: 'bold',
         color: '#ffffff',
-        wordWrap: { width: btnWidth - 46, useAdvancedWrap: true }
+        wordWrap: { width: btnWidth - 76, useAdvancedWrap: true }
       }).setOrigin(0, 0.5);
 
       const hitZone = this.scene.add.zone(0, 0, btnWidth, btnHeight).setInteractive({ useHandCursor: true });
@@ -188,12 +189,12 @@ export class ActionDeck extends Phaser.GameObjects.Container {
     graphics.fillRect(-w / 2, -h / 2, w, h);
 
     // Outer border
-    graphics.lineStyle(2, border, 1);
+    graphics.lineStyle(3, border, 1);
     graphics.strokeRect(-w / 2, -h / 2, w, h);
 
     // Inner subtle highlight
-    graphics.lineStyle(1, innerBorder, 1);
-    graphics.strokeRect(-w / 2 + 2, -h / 2 + 2, w - 4, h - 4);
+    graphics.lineStyle(1.5, innerBorder, 1);
+    graphics.strokeRect(-w / 2 + 3, -h / 2 + 3, w - 6, h - 6);
   }
 
   public clearButtons(): void {
